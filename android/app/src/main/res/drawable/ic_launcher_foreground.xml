@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Expense Tracker Foreground: A wallet with a coin or dollar sign, centered in safe zone -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,40C31.8,40 30,41.8 30,44L30,72C30,74.2 31.8,76 34,76L74,76C76.2,76 78,74.2 78,72L78,44C78,41.8 76.2,40 74,40L34,40ZM34,44L74,44L74,48L34,48L34,44ZM34,52L74,52L74,72L34,72L34,52ZM54,55C50.7,55 48,57.7 48,61C48,64.3 50.7,67 54,67C57.3,67 60,64.3 60,61C60,57.7 57.3,55 54,55ZM54,58C55.7,58 57,59.3 57,61C57,62.7 55.7,64 54,64C52.3,64 51,62.7 51,61C51,59.3 52.3,58 54,58Z" />
+</vector>
