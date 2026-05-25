@@ -1,0 +1,62 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Build & Test Commands
+
+```bash
+# Build everything
+./gradlew build
+
+# Build specific modules
+./gradlew :android:app:assembleDebug
+./gradlew :backend:build
+
+# Run all unit tests
+./gradlew :android:app:testDebugUnitTest
+./gradlew :backend:test
+
+# Run a single test class
+./gradlew :android:app:testDebugUnitTest --tests "dev.oruizp.expensetracker.ExampleUnitTest"
+
+# Lint
+./gradlew lint
+
+# Backend (run locally via Gradle)
+./gradlew :backend:run
+```
+
+## Project Architecture
+
+Multi-module Gradle project with three top-level groups:
+
+### Android Client (`:android:*`)
+- **`:android:app`** — Main app entry point (Compose UI, Room entities/DAO/database, ViewModel). Uses `AndroidViewModel` and accesses Room DB directly via a singleton `ExpenseDatabase`.
+- **`:android:core`** — Shared Android library (currently minimal).
+- **`:android:data`** — Data layer: Room DAOs, Retrofit networking, Moshi JSON, OkHttp/DataStore for preferences. Depends on `:android:domain`.
+- **`:android:domain`** — Domain layer (pure Kotlin business logic, coroutines).
+- **`:android:features:transactions|budgets|categories|reports|settings`** — Feature-scoped Compose modules, each depending on `:core`, `:data`, and `:domain`. Compose enabled with Material3.
+
+### Backend (`:backend`)
+- Ktor server with Netty engine on port 8080, ContentNegotiation (JSON), Koin DI.
+- Exposed ORM (H2 in-memory for dev, PostgreSQL for prod).
+- Routes in `routes/`, database in `database/`, DI config in `di/`.
+- Entry point: `dev.oruizp.expensetracker.backend.ApplicationKt`.
+
+### Common (`:common`)
+- Kotlin Multiplatform module targeting Android + iOS (x64, Arm64, SimulatorArm64).
+- Platform-specific `expect`/`actual` declarations in `Platform.kt`.
+
+## Key Stack Versions
+- **AGP**: 9.1.1, **Kotlin**: 2.2.10, **Gradle**: 9.3.1
+- **Room**: 2.7.0, **Retrofit**: 2.12.0, **Moshi**: 1.15.2
+- **Ktor**: 2.3.12, **Exposed**: 0.53.0, **Koin**: 3.5.6
+- **Compose BOM**: 2024.09.00
+- **minSdk**: 24, **target/compileSdk**: 36, **Java**: 11
+
+## Key Conventions
+- Package: `dev.oruizp.expensetracker` (client) / `dev.oruizp.expensetracker.backend` (server).
+- Room entities use `@Entity`, DAOs use `@Dao` with Flow return types for reactive queries.
+- ViewModels extend `AndroidViewModel` and expose state via `StateFlow`.
+- Backend uses Koin DI (no Hilt on server side).
+- Version catalog in `gradle/libs.versions.toml` — use `libs.*` references in build files.

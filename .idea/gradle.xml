@@ -15,6 +15,11 @@
             <option value="$PROJECT_DIR$/android/data" />
             <option value="$PROJECT_DIR$/android/domain" />
             <option value="$PROJECT_DIR$/android/features" />
+            <option value="$PROJECT_DIR$/android/features/budgets" />
+            <option value="$PROJECT_DIR$/android/features/categories" />
+            <option value="$PROJECT_DIR$/android/features/reports" />
+            <option value="$PROJECT_DIR$/android/features/settings" />
+            <option value="$PROJECT_DIR$/android/features/transactions" />
             <option value="$PROJECT_DIR$/backend" />
             <option value="$PROJECT_DIR$/common" />
           </set>

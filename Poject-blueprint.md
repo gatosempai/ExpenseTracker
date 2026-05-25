@@ -32,7 +32,7 @@ The backend exposes **both REST and GraphQL** APIs and is written in **Kotlin**.
 - **Local DB:** Room (SQLite) with type converters for `Date`, `BigDecimal`
 - **Background sync:** WorkManager (periodic + network‑triggered)
 - **Image handling:** CameraX, Coil, ML Kit Text Recognition
-- **DI:** Hilt
+- **DI:** Hilt(avoid) try pure DI
 - **Networking:** Retrofit (REST) + Apollo Kotlin (GraphQL) – both with offline cache
 - **Testing:** JUnit, Robolectric, MockK, Turbine (Flow test)
 

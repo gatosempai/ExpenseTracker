@@ -25,12 +25,20 @@ dependencyResolutionManagement {
 rootProject.name = "ExpenseTracker"
 
 // Android app modules
-include("android:app")
-include("android:core")
-include("android:data")
-include("android:domain")
-include("android:features")
+include(":android:app")
+include(":android:core")
+include(":android:data")
+include(":android:domain")
+
+// Feature submodules
+include(":android:features:transactions")
+include(":android:features:budgets")
+include(":android:features:categories")
+include(":android:features:reports")
+include(":android:features:settings")
 
 // Backend Ktor module
 include(":backend")
+
+// KMP shared module (optional)
 include(":common")

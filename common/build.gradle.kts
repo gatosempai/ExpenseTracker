@@ -10,7 +10,7 @@ kotlin {
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
     android {
-        namespace = "dev.oruizp.common"
+        namespace = "dev.oruizp.expensetracker.common"
         compileSdk {
             version = release(36) {
                 minorApiLevel = 1

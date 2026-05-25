@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.google.devtools.ksp)
 }
 
 android {
@@ -12,7 +13,6 @@ android {
 
     defaultConfig {
         minSdk = 24
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -33,10 +33,24 @@ android {
 }
 
 dependencies {
+    implementation(project(":android:domain"))
+
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    "ksp"(libs.androidx.room.compiler)
+    implementation(libs.retrofit)
+    implementation(libs.converter.moshi)
+    implementation(libs.moshi.kotlin)
+    "ksp"(libs.moshi.kotlin.codegen)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
+
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
