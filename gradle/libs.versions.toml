@@ -46,6 +46,11 @@ serialization = "1.7.3"
 h2 = "2.2.224"
 postgresql = "42.7.4"
 logback = "1.5.13"
+graphqlKotlin = "8.0.0"
+hikari = "5.1.0"
+flyway = "10.22.0"
+exposedJson = "0.53.0"
+exposedJavaTime = "0.53.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -108,6 +113,16 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 h2-database = { group = "com.h2database", name = "h2", version.ref = "h2" }
 postgresql-jdbc = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
 logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
+graphql-kotlin-ktor-server = { group = "com.expediagroup", name = "graphql-kotlin-ktor-server", version.ref = "graphqlKotlin" }
+hikari-cp = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
+flyway-core = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway" }
+flyway-postgresql = { group = "org.flywaydb", name = "flyway-database-postgresql", version.ref = "flyway" }
+exposed-json = { group = "org.jetbrains.exposed", name = "exposed-json", version.ref = "exposedJson" }
+exposed-java-time = { group = "org.jetbrains.exposed", name = "exposed-java-time", version.ref = "exposedJavaTime" }
+ktor-server-cors = { group = "io.ktor", name = "ktor-server-cors", version.ref = "ktor" }
+ktor-server-status-pages = { group = "io.ktor", name = "ktor-server-status-pages", version.ref = "ktor" }
+ktor-server-call-logging = { group = "io.ktor", name = "ktor-server-call-logging", version.ref = "ktor" }
+ktor-server-websockets = { group = "io.ktor", name = "ktor-server-websockets", version.ref = "ktor" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -119,4 +134,5 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 android-lint = { id = "com.android.lint", version.ref = "agp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+graphql-gradle = { id = "com.expediagroup.graphql", version.ref = "graphqlKotlin" }
 
