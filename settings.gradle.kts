@@ -34,6 +34,7 @@ include(":android:domain")
 include(":android:features:transactions")
 include(":android:features:budgets")
 include(":android:features:categories")
+include(":android:features:home")
 include(":android:features:reports")
 include(":android:features:settings")
 
