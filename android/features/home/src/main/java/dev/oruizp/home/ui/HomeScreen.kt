@@ -1,4 +1,4 @@
-package dev.oruizp.expensetracker.ui.home
+package dev.oruizp.home.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -46,13 +46,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.oruizp.expensetracker.data.Expense
 import dev.oruizp.expensetracker.data.ExpenseCategory
-import dev.oruizp.expensetracker.ui.theme.CategoryBills
-import dev.oruizp.expensetracker.ui.theme.CategoryEntertainment
-import dev.oruizp.expensetracker.ui.theme.CategoryFood
-import dev.oruizp.expensetracker.ui.theme.CategoryOther
-import dev.oruizp.expensetracker.ui.theme.CategoryShopping
-import dev.oruizp.expensetracker.ui.theme.CategoryTransport
-import dev.oruizp.expensetracker.ui.theme.ExpenseTrackerTheme
+import dev.oruizp.expensetracker.core.theme.CategoryBills
+import dev.oruizp.expensetracker.core.theme.CategoryEntertainment
+import dev.oruizp.expensetracker.core.theme.CategoryFood
+import dev.oruizp.expensetracker.core.theme.CategoryOther
+import dev.oruizp.expensetracker.core.theme.CategoryShopping
+import dev.oruizp.expensetracker.core.theme.CategoryTransport
+import dev.oruizp.expensetracker.core.theme.ExpenseTrackerTheme
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -167,7 +167,7 @@ fun TotalSpentCard(totalSpent: Double) {
 fun ExpenseList(expenses: List<Expense>) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 80.dp) // Space for FAB
+        contentPadding = PaddingValues(bottom = 80.dp)
     ) {
         items(expenses) { expense ->
             ExpenseListItem(expense = expense)

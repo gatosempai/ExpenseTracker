@@ -1,4 +1,4 @@
-package dev.oruizp.expensetracker.ui.home
+package dev.oruizp.home.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

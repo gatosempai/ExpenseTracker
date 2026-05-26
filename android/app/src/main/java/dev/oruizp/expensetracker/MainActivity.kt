@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import dev.oruizp.expensetracker.ui.home.HomeScreen
-import dev.oruizp.expensetracker.ui.theme.ExpenseTrackerTheme
+import dev.oruizp.expensetracker.core.theme.ExpenseTrackerTheme
+import dev.oruizp.home.ui.HomeScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

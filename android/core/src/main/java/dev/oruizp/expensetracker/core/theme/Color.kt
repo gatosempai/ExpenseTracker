@@ -1,8 +1,7 @@
-package dev.oruizp.expensetracker.ui.theme
+package dev.oruizp.expensetracker.core.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Financial Green Theme
 val PrimaryGreen = Color(0xFF006D32)
 val OnPrimaryGreen = Color(0xFFFFFFFF)
 val PrimaryContainerGreen = Color(0xFF99F6AB)
@@ -28,7 +27,6 @@ val OnBackgroundLight = Color(0xFF191C19)
 val SurfaceLight = Color(0xFFFBFDF8)
 val OnSurfaceLight = Color(0xFF191C19)
 
-// Dark Theme Variants
 val PrimaryGreenDark = Color(0xFF7ED991)
 val OnPrimaryGreenDark = Color(0xFF003917)
 val PrimaryContainerGreenDark = Color(0xFF005224)
@@ -39,7 +37,6 @@ val OnBackgroundDark = Color(0xFFE1E3DE)
 val SurfaceDark = Color(0xFF191C19)
 val OnSurfaceDark = Color(0xFFE1E3DE)
 
-// Category Colors
 val CategoryFood = Color(0xFFFF5252)
 val CategoryTransport = Color(0xFF448AFF)
 val CategoryShopping = Color(0xFFFFAB40)

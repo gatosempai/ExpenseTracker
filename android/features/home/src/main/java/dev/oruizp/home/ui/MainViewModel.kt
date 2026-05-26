@@ -1,4 +1,4 @@
-package dev.oruizp.expensetracker.ui.home
+package dev.oruizp.home.ui
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

@@ -41,6 +41,9 @@ android {
 }
 
 dependencies {
+    implementation(project(":android:features:home"))
+    implementation(project(":android:data"))
+    implementation(project(":android:core"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
