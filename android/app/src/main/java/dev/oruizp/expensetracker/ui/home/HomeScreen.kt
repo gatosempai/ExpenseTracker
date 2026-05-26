@@ -1,7 +1,6 @@
 package dev.oruizp.expensetracker.ui.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,19 +28,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.oruizp.expensetracker.data.Expense
 import dev.oruizp.expensetracker.data.ExpenseCategory
@@ -51,21 +52,32 @@ import dev.oruizp.expensetracker.ui.theme.CategoryFood
 import dev.oruizp.expensetracker.ui.theme.CategoryOther
 import dev.oruizp.expensetracker.ui.theme.CategoryShopping
 import dev.oruizp.expensetracker.ui.theme.CategoryTransport
+import dev.oruizp.expensetracker.ui.theme.ExpenseTrackerTheme
+import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
 
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: MainViewModel = viewModel()
 ) {
     val expenses by viewModel.expenses.collectAsState()
     val totalSpent by viewModel.totalSpent.collectAsState()
-    
+
+    HomeScreenContent(
+        expenses = expenses,
+        totalSpent = totalSpent,
+        onAddExpense = { viewModel.addExpense(it) }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreenContent(
+    expenses: List<Expense>,
+    totalSpent: Double,
+    onAddExpense: (Expense) -> Unit = {}
+) {
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -107,7 +119,7 @@ fun HomeScreen(
                 sheetState = sheetState,
                 onDismiss = { showBottomSheet = false },
                 onSave = { expense ->
-                    viewModel.addExpense(expense)
+                    onAddExpense(expense)
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                         if (!sheetState.isVisible) {
                             showBottomSheet = false
@@ -220,4 +232,21 @@ fun getCategoryColor(category: ExpenseCategory): Color {
 fun formatCurrency(amount: Double): String {
     val format = NumberFormat.getCurrencyInstance(Locale.getDefault())
     return format.format(amount)
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenPreview() {
+    val sampleExpenses = listOf(
+        Expense(1, "Groceries", 50.0, ExpenseCategory.FOOD),
+        Expense(2, "Bus Fare", 2.5, ExpenseCategory.TRANSPORT),
+        Expense(3, "Movie", 15.0, ExpenseCategory.ENTERTAINMENT),
+        Expense(4, "Rent", 1200.0, ExpenseCategory.BILLS)
+    )
+    ExpenseTrackerTheme {
+        HomeScreenContent(
+            expenses = sampleExpenses,
+            totalSpent = 1267.5
+        )
+    }
 }
