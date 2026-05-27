@@ -1,4 +1,4 @@
-package dev.oruizp.expensetracker.data
+package dev.oruizp.expensetracker.data.local
 
 import androidx.room.Dao
 import androidx.room.Delete

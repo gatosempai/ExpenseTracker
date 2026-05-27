@@ -156,6 +156,9 @@ ExpenseTracker/
 │   │           └── theme/            # Material 3 theme
 │   ├── core/                         # Shared utilities, DI
 │   ├── data/                         # Data layer (repositories)
+│       ├── local/                    # Domain layer (models, use cases)
+│       ├── remote/                   # Budget management
+│       └── repository/               # Category management
 │   ├── domain/                       # Domain layer (models, use cases)
 │   └── features/
 │       ├── transactions/             # Transaction list + detail

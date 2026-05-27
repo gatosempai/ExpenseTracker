@@ -3,15 +3,15 @@ package dev.oruizp.home.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import dev.oruizp.expensetracker.data.Expense
-import dev.oruizp.expensetracker.data.ExpenseDatabase
+import dev.oruizp.expensetracker.data.local.Expense
+import dev.oruizp.expensetracker.data.local.ExpenseDatabase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val expenseDao = ExpenseDatabase.getDatabase(application).expenseDao()
 
     val expenses: StateFlow<List<Expense>> = expenseDao.getAllExpenses()

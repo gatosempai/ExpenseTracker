@@ -18,6 +18,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,10 +26,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.oruizp.expensetracker.data.Expense
-import dev.oruizp.expensetracker.data.ExpenseCategory
-import java.util.Locale
+import dev.oruizp.core.theme.ExpenseTrackerTheme
+import dev.oruizp.expensetracker.data.local.Expense
+import dev.oruizp.expensetracker.data.local.ExpenseCategory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -149,7 +151,8 @@ fun AddExpenseSheet(
                             Expense(
                                 title = title,
                                 amount = dAmount,
-                                category = category
+                                category = category,
+                                timestamp = System.currentTimeMillis()
                             )
                         )
                     }
@@ -160,5 +163,18 @@ fun AddExpenseSheet(
                 Text("Save Expense", modifier = Modifier.padding(8.dp))
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+fun AddExpenseSheetPreview() {
+    ExpenseTrackerTheme {
+        AddExpenseSheet(
+            sheetState = rememberModalBottomSheetState(),
+            onDismiss = { },
+            onSave = { }
+        )
     }
 }

@@ -1,4 +1,4 @@
-package dev.oruizp.expensetracker.core.theme
+package dev.oruizp.core.theme
 
 import androidx.compose.ui.graphics.Color
 
