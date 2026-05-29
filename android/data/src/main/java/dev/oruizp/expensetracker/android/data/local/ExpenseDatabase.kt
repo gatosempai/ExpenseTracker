@@ -1,4 +1,4 @@
-package dev.oruizp.expensetracker.data.local
+package dev.oruizp.expensetracker.android.data.local
 
 import android.content.Context
 import androidx.room.Database

@@ -1,4 +1,4 @@
-package dev.oruizp.expensetracker.data.local
+package dev.oruizp.expensetracker.android.data.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
