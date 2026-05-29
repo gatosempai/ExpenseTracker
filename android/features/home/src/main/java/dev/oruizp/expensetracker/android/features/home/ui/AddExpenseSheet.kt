@@ -1,4 +1,4 @@
-package dev.oruizp.home.ui
+package dev.oruizp.expensetracker.android.features.home.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,9 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.oruizp.core.theme.ExpenseTrackerTheme
-import dev.oruizp.expensetracker.data.local.Expense
-import dev.oruizp.expensetracker.data.local.ExpenseCategory
+import dev.oruizp.expensetracker.android.core.theme.ExpenseTrackerTheme
+import dev.oruizp.expensetracker.android.data.local.ExpenseCategory
+import dev.oruizp.expensetracker.android.domain.models.Expense
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

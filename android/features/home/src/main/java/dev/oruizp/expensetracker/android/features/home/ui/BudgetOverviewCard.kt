@@ -1,4 +1,4 @@
-package dev.oruizp.home.ui
+package dev.oruizp.expensetracker.android.features.home.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,14 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.oruizp.core.theme.CategoryBills
-import dev.oruizp.core.theme.CategoryEntertainment
-import dev.oruizp.core.theme.CategoryFood
-import dev.oruizp.core.theme.CategoryOther
-import dev.oruizp.core.theme.CategoryShopping
-import dev.oruizp.core.theme.CategoryTransport
-import dev.oruizp.core.theme.ExpenseTrackerTheme
-import dev.oruizp.home.data.BudgetCategory
+import dev.oruizp.expensetracker.android.core.theme.CategoryBills
+import dev.oruizp.expensetracker.android.core.theme.CategoryEntertainment
+import dev.oruizp.expensetracker.android.core.theme.CategoryFood
+import dev.oruizp.expensetracker.android.core.theme.CategoryOther
+import dev.oruizp.expensetracker.android.core.theme.CategoryShopping
+import dev.oruizp.expensetracker.android.core.theme.CategoryTransport
+import dev.oruizp.expensetracker.android.core.theme.ExpenseTrackerTheme
+import dev.oruizp.expensetracker.android.features.home.data.BudgetCategory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

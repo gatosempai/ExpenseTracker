@@ -1,4 +1,4 @@
-package dev.oruizp.core.utils.date
+package dev.oruizp.expensetracker.android.core.utils.date
 
 import android.os.Build
 import androidx.annotation.RequiresApi

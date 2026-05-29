@@ -1,4 +1,4 @@
-package dev.oruizp.home.ui
+package dev.oruizp.expensetracker.android.features.home.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -25,10 +25,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.oruizp.core.theme.ExpenseTrackerTheme
-import dev.oruizp.core.utils.date.formatTime
-import dev.oruizp.expensetracker.data.local.Expense
-import dev.oruizp.expensetracker.data.local.ExpenseCategory
+import dev.oruizp.expensetracker.android.core.theme.ExpenseTrackerTheme
+import dev.oruizp.expensetracker.android.core.utils.date.formatTime
+import dev.oruizp.expensetracker.android.data.local.Expense
+import dev.oruizp.expensetracker.android.data.local.ExpenseCategory
 import java.util.Locale
 
 @Composable

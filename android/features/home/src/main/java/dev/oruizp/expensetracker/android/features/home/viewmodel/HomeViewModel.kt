@@ -1,10 +1,10 @@
-package dev.oruizp.home.ui
+package dev.oruizp.expensetracker.android.features.home.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import dev.oruizp.expensetracker.data.local.Expense
-import dev.oruizp.expensetracker.data.local.ExpenseDatabase
+import dev.oruizp.expensetracker.android.data.local.Expense
+import dev.oruizp.expensetracker.android.data.local.ExpenseDatabase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map

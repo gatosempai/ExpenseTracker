@@ -1,4 +1,4 @@
-package dev.oruizp.core.theme
+package dev.oruizp.expensetracker.android.core.theme
 
 import android.app.Activity
 import android.os.Build

@@ -1,4 +1,4 @@
-package dev.oruizp.home.data
+package dev.oruizp.expensetracker.android.features.home.data
 
 import androidx.compose.ui.graphics.Color
 

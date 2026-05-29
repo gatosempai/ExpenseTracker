@@ -1,15 +1,15 @@
-package dev.oruizp.expensetracker.di
+package dev.oruizp.expensetracker.android.app.di
 
 import android.content.Context
 import android.net.ConnectivityManager
-import dev.oruizp.expensetracker.data.local.ExpenseDatabase
-import dev.oruizp.expensetracker.data.network.NetworkMonitor
-import dev.oruizp.expensetracker.data.network.NetworkMonitorImpl
-import dev.oruizp.expensetracker.data.remote.GraphqlModule
-import dev.oruizp.expensetracker.data.remote.expense.ExpenseApi
-import dev.oruizp.expensetracker.data.remote.expense.ExpenseApiGraphQL
-import dev.oruizp.expensetracker.data.repository.expense.ExpenseRepositoryImpl
-import dev.oruizp.expensetracker.repository.ExpenseRepository
+import dev.oruizp.expensetracker.android.data.local.ExpenseDatabase
+import dev.oruizp.expensetracker.android.data.network.NetworkMonitor
+import dev.oruizp.expensetracker.android.data.network.NetworkMonitorImpl
+import dev.oruizp.expensetracker.android.data.remote.GraphqlModule
+import dev.oruizp.expensetracker.android.data.remote.expense.ExpenseApi
+import dev.oruizp.expensetracker.android.data.remote.expense.ExpenseApiGraphQL
+import dev.oruizp.expensetracker.android.data.repository.expense.ExpenseRepositoryImpl
+import dev.oruizp.expensetracker.android.domain.repository.ExpenseRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 

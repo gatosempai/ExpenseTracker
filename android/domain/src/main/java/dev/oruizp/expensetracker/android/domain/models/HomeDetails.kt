@@ -1,4 +1,4 @@
-package dev.oruizp.expensetracker.models
+package dev.oruizp.expensetracker.android.domain.models
 
 data class HomeDetails(
     val totalSpent: Double,

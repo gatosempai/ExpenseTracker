@@ -1,4 +1,4 @@
-package dev.oruizp.home.ui
+package dev.oruizp.expensetracker.android.features.home.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,18 +27,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.oruizp.core.theme.CategoryBills
-import dev.oruizp.core.theme.CategoryEntertainment
-import dev.oruizp.core.theme.CategoryFood
-import dev.oruizp.core.theme.CategoryOther
-import dev.oruizp.core.theme.CategoryShopping
-import dev.oruizp.core.theme.CategoryTransport
-import dev.oruizp.core.theme.ExpenseTrackerTheme
-import dev.oruizp.expensetracker.data.home.HomeDetails
-import dev.oruizp.expensetracker.data.local.Expense
-import dev.oruizp.expensetracker.data.local.ExpenseCategory
-import dev.oruizp.home.data.BudgetCategory
+import dev.oruizp.expensetracker.android.core.theme.CategoryBills
+import dev.oruizp.expensetracker.android.core.theme.CategoryEntertainment
+import dev.oruizp.expensetracker.android.core.theme.CategoryFood
+import dev.oruizp.expensetracker.android.core.theme.CategoryOther
+import dev.oruizp.expensetracker.android.core.theme.CategoryShopping
+import dev.oruizp.expensetracker.android.core.theme.CategoryTransport
+import dev.oruizp.expensetracker.android.core.theme.ExpenseTrackerTheme
+import dev.oruizp.expensetracker.android.data.local.ExpenseCategory
+import dev.oruizp.expensetracker.android.domain.models.Expense
+import dev.oruizp.expensetracker.android.features.home.data.BudgetCategory
+import dev.oruizp.expensetracker.android.features.home.data.TotalSpentUiState
+import dev.oruizp.expensetracker.android.features.home.viewmodel.ExpenseViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.text.NumberFormat
@@ -55,7 +55,7 @@ fun HomeScreen(
     HomeScreenContent(
         //expenses = expenses,
         totalSpent = totalSpent,
-        onAddExpense = { viewModel.addExpense(it) }
+        onAddExpense = { expenseViewModel.addExpense(it) }
     )
 }
 
