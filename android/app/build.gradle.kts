@@ -42,6 +42,7 @@ android {
 
 dependencies {
     implementation(project(":android:features:home"))
+    implementation(project(":android:domain"))
     implementation(project(":android:data"))
     implementation(project(":android:core"))
     implementation(libs.androidx.core.ktx)
@@ -86,6 +87,9 @@ dependencies {
     androidTestImplementation(libs.androidx.runner)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.apollo.runtime)
     "ksp"(libs.androidx.room.compiler)
     "ksp"(libs.moshi.kotlin.codegen)
 }
