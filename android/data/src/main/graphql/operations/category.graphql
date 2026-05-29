@@ -1,0 +1,50 @@
+query Categories {
+  categories {
+    id
+    name
+    color
+    icon
+    isDefault
+    expenseCount
+    totalAmount
+  }
+}
+
+query Category($id: String!) {
+  category(id: $id) {
+    id
+    name
+    color
+    icon
+    isDefault
+    expenseCount
+    totalAmount
+  }
+}
+
+mutation CreateCategory($input: CreateCategoryInput!) {
+  createCategory(input: $input) {
+    id
+    name
+    color
+    icon
+    isDefault
+  }
+}
+
+mutation UpdateCategory($id: String!, $input: UpdateCategoryInput!) {
+  updateCategory(id: $id, input: $input) {
+    id
+    name
+    color
+    icon
+    isDefault
+  }
+}
+
+mutation DeleteCategory($id: String!) {
+  deleteCategory(id: $id) {
+    success
+    id
+  }
+}

@@ -1,0 +1,325 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+"Marks the field, argument, input field or enum value as deprecated"
+directive @deprecated(
+    "The reason for the deprecation"
+    reason: String = "No longer supported"
+  ) on FIELD_DEFINITION | ARGUMENT_DEFINITION | ENUM_VALUE | INPUT_FIELD_DEFINITION
+
+"Directs the executor to include this field or fragment only when the `if` argument is true"
+directive @include(
+    "Included when true."
+    if: Boolean!
+  ) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+"Indicates an Input Object is a OneOf Input Object."
+directive @oneOf on INPUT_OBJECT
+
+"Directs the executor to skip this field or fragment when the `if` argument is true."
+directive @skip(
+    "Skipped when true."
+    if: Boolean!
+  ) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+"Exposes a URL that specifies the behaviour of this scalar."
+directive @specifiedBy(
+    "The URL that specifies the behaviour of this scalar."
+    url: String!
+  ) on SCALAR
+
+type Budget {
+  category: Category
+  categoryId: Int!
+  daysRemaining: Int!
+  id: Int!
+  isOverLimit: Boolean!
+  isWarning: Boolean!
+  limit: Float!
+  percentage: Float!
+  period: Period!
+  spent: Float!
+  startDate: String!
+}
+
+type Category {
+  color: String!
+  expenseCount: Int!
+  icon: String!
+  id: Int!
+  isDefault: Boolean!
+  name: String!
+  totalAmount: Float!
+}
+
+type CategoryBreakdown {
+  amount: Float!
+  category: Category!
+  percentage: Float!
+  transactionCount: Int!
+}
+
+type Comparison {
+  amount: Float!
+  percentage: Float!
+  trend: TrendDirection!
+}
+
+type DailyDataPoint {
+  amount: Float!
+  date: String!
+  transactionCount: Int!
+}
+
+type Dashboard {
+  budgetOverview: [Budget!]!
+  previousPeriodComparison: Comparison!
+  recentTransactions: [Expense!]!
+  totalSpent: Float!
+}
+
+type DeleteResult {
+  id: String!
+  success: Boolean!
+}
+
+type Expense {
+  amount: Float!
+  category: Category
+  categoryId: Int!
+  clientId: String
+  conflictVersion: Int!
+  createdAt: String!
+  date: String!
+  description: String
+  id: Int!
+  locationLat: Float
+  locationLng: Float
+  receiptUrl: String
+  title: String!
+  updatedAt: String!
+}
+
+type ExpenseConnection {
+  edges: [ExpenseEdge!]!
+  pageInfo: PageInfo!
+  totalAmount: Float!
+  totalCount: Int!
+}
+
+type ExpenseEdge {
+  cursor: String!
+  node: Expense!
+}
+
+type MonthlyReport {
+  categoryBreakdown: [CategoryBreakdown!]!
+  days: [DailyDataPoint!]!
+  month: Int!
+  topExpenses: [Expense!]!
+  totalSpent: Float!
+  year: Int!
+}
+
+type MonthlySummary {
+  month: Int!
+  totalSpent: Float!
+  transactionCount: Int!
+}
+
+type Mutation {
+  createBudget(input: CreateBudgetInput!): Budget!
+  createCategory(input: CreateCategoryInput!): Category!
+  createExpense(input: CreateExpenseInput!): Expense!
+  deleteBudget(id: String!): DeleteResult!
+  deleteCategory(id: String!): DeleteResult!
+  deleteExpense(id: String!): DeleteResult!
+  updateBudget(id: String!, input: UpdateBudgetInput!): Budget
+  updateCategory(id: String!, input: UpdateCategoryInput!): Category
+  updateExpense(id: String!, input: UpdateExpenseInput!): Expense
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
+type Query {
+  budget(id: String!): Budget
+  budgets(period: Period): [Budget!]!
+  categories: [Category!]!
+  category(id: String!): Category
+  categoryCreate(input: CreateCategoryInput!): Category!
+  categoryDelete(id: String!): DeleteResult!
+  categoryUpdate(id: String!, input: UpdateCategoryInput!): Category
+  dashboard: Dashboard!
+  expense(id: String!): Expense
+  expenses(filter: ExpenseFilterInput, pagination: PaginationInput, sort: SortInput): ExpenseConnection!
+  reportMonthly(month: Int!, year: Int!): MonthlyReport!
+  reportSummary(month: Int, period: Period, year: Int): ReportSummary!
+  reportYearly(year: Int!): YearlyReport!
+  syncBatch(inputs: [SyncInput!]!): SyncResult!
+}
+
+type ReportSummary {
+  averageDaily: Float!
+  categoryBreakdown: [CategoryBreakdown!]!
+  dailyTrend: [DailyDataPoint!]!
+  netAmount: Float!
+  previousPeriodComparison: Comparison!
+  topExpenses: [Expense!]!
+  totalIncome: Float!
+  totalSpent: Float!
+}
+
+type SyncApplied {
+  entity: SyncEntityType!
+  operationId: String!
+  serverId: String!
+}
+
+type SyncConflict {
+  entity: SyncEntityType!
+  operationId: String!
+  resolution: ConflictResolution!
+  serverData: String!
+  serverId: String!
+  serverVersion: Int!
+}
+
+type SyncResult {
+  applied: [SyncApplied!]!
+  conflicts: [SyncConflict!]!
+  serverTimestamp: String!
+  success: Boolean!
+}
+
+type YearlyReport {
+  categoryBreakdown: [CategoryBreakdown!]!
+  comparison: Comparison!
+  monthlyBreakdown: [MonthlySummary!]!
+  totalSpent: Float!
+  year: Int!
+}
+
+enum ConflictResolution {
+  CLIENT_WINS
+  MANUAL
+  SERVER_WINS
+}
+
+enum Period {
+  MONTHLY
+  WEEKLY
+  YEARLY
+}
+
+enum SortField {
+  AMOUNT
+  DATE
+  TITLE
+}
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+enum SyncEntityType {
+  BUDGET
+  CATEGORY
+  EXPENSE
+}
+
+enum SyncOperationType {
+  CREATE
+  DELETE
+  UPDATE
+}
+
+enum TrendDirection {
+  DOWN
+  SAME
+  UP
+}
+
+input CreateBudgetInput {
+  categoryId: String!
+  limit: Float!
+  period: Period!
+}
+
+input CreateCategoryInput {
+  color: String!
+  icon: String
+  name: String!
+}
+
+input CreateExpenseInput {
+  amount: Float!
+  categoryId: String!
+  clientId: String
+  date: String!
+  description: String
+  title: String!
+}
+
+input ExpenseFilterInput {
+  categoryId: String
+  dateFrom: String
+  dateTo: String
+  maxAmount: Float
+  minAmount: Float
+  search: String
+}
+
+input PaginationInput {
+  after: String
+  before: String
+  first: Int!
+  last: Int
+}
+
+input SortInput {
+  field: SortField!
+  order: SortOrder!
+}
+
+input SyncInput {
+  clientId: String!
+  lastSyncedAt: String!
+  operations: [SyncOperationInput!]!
+}
+
+input SyncOperationInput {
+  conflictVersion: Int!
+  data: String!
+  entityType: SyncEntityType!
+  localId: String!
+  operationType: SyncOperationType!
+  serverId: String
+  timestamp: String!
+}
+
+input UpdateBudgetInput {
+  limit: Float
+  period: Period
+}
+
+input UpdateCategoryInput {
+  color: String
+  icon: String
+  name: String
+}
+
+input UpdateExpenseInput {
+  amount: Float
+  categoryId: String
+  date: String
+  description: String
+  title: String
+}

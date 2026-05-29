@@ -1,0 +1,149 @@
+query Dashboard {
+  dashboard {
+    totalSpent
+    budgetOverview {
+      id
+      categoryId
+      category {
+        id
+        name
+        color
+        icon
+      }
+      limit
+      spent
+      percentage
+      period
+      startDate
+      daysRemaining
+      isOverLimit
+      isWarning
+    }
+    previousPeriodComparison {
+      amount
+      percentage
+      trend
+    }
+    recentTransactions {
+      id
+      title
+      amount
+      date
+      categoryId
+      category {
+        id
+        name
+        color
+        icon
+      }
+    }
+  }
+}
+
+query ReportSummary($period: Period, $month: Int, $year: Int) {
+  reportSummary(period: $period, month: $month, year: $year) {
+    totalSpent
+    totalIncome
+    netAmount
+    averageDaily
+    previousPeriodComparison {
+      amount
+      percentage
+      trend
+    }
+    categoryBreakdown {
+      category {
+        id
+        name
+        color
+        icon
+      }
+      amount
+      percentage
+      transactionCount
+    }
+    dailyTrend {
+      date
+      amount
+      transactionCount
+    }
+    topExpenses {
+      id
+      title
+      amount
+      date
+      categoryId
+      category {
+        id
+        name
+        color
+        icon
+      }
+    }
+  }
+}
+
+query ReportMonthly($month: Int!, $year: Int!) {
+  reportMonthly(month: $month, year: $year) {
+    month
+    year
+    totalSpent
+    categoryBreakdown {
+      category {
+        id
+        name
+        color
+        icon
+      }
+      amount
+      percentage
+      transactionCount
+    }
+    days {
+      date
+      amount
+      transactionCount
+    }
+    topExpenses {
+      id
+      title
+      amount
+      date
+      categoryId
+      category {
+        id
+        name
+        color
+        icon
+      }
+    }
+  }
+}
+
+query ReportYearly($year: Int!) {
+  reportYearly(year: $year) {
+    year
+    totalSpent
+    categoryBreakdown {
+      category {
+        id
+        name
+        color
+        icon
+      }
+      amount
+      percentage
+      transactionCount
+    }
+    comparison {
+      amount
+      percentage
+      trend
+    }
+    monthlyBreakdown {
+      month
+      totalSpent
+      transactionCount
+    }
+  }
+}

@@ -1,3 +1,5 @@
+import com.expediagroup.graphql.plugin.gradle.tasks.GraphQLGenerateSDLTask
+
 plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
@@ -27,6 +29,10 @@ graphql {
             "dev.oruizp.expensetracker.backend.models",
         )
     }
+}
+
+tasks.named("graphqlGenerateSDL", GraphQLGenerateSDLTask::class) {
+    schemaFile.set(file("$rootDir/android/data/src/main/graphql/schema.graphqls"))
 }
 
 dependencies {

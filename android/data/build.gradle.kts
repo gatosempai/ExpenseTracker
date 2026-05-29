@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.google.devtools.ksp)
+    alias(libs.plugins.apollo.android)
 }
 
 android {
@@ -32,6 +33,16 @@ android {
     }
 }
 
+apollo {
+    service("expenseTracker") {
+        packageName.set("dev.oruizp.expensetracker.data.graphql")
+    }
+}
+
+tasks.matching { it.name.endsWith("ApolloSources") }.configureEach {
+    dependsOn(":backend:graphqlGenerateSDL")
+}
+
 dependencies {
     implementation(project(":android:domain"))
 
@@ -48,6 +59,9 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.apollo.runtime)
+    implementation(libs.apollo.cache.normalized)
+    implementation(libs.apollo.cache.normalized.sqlite)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

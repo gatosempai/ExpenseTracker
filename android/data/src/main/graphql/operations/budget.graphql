@@ -1,0 +1,78 @@
+query Budgets($period: Period) {
+  budgets(period: $period) {
+    id
+    categoryId
+    category {
+      id
+      name
+      color
+      icon
+    }
+    limit
+    spent
+    percentage
+    period
+    startDate
+    daysRemaining
+    isOverLimit
+    isWarning
+  }
+}
+
+query Budget($id: String!) {
+  budget(id: $id) {
+    id
+    categoryId
+    category {
+      id
+      name
+      color
+      icon
+    }
+    limit
+    spent
+    percentage
+    period
+    startDate
+    daysRemaining
+    isOverLimit
+    isWarning
+  }
+}
+
+mutation CreateBudget($input: CreateBudgetInput!) {
+  createBudget(input: $input) {
+    id
+    categoryId
+    limit
+    spent
+    percentage
+    period
+    startDate
+    daysRemaining
+    isOverLimit
+    isWarning
+  }
+}
+
+mutation UpdateBudget($id: String!, $input: UpdateBudgetInput!) {
+  updateBudget(id: $id, input: $input) {
+    id
+    categoryId
+    limit
+    spent
+    percentage
+    period
+    startDate
+    daysRemaining
+    isOverLimit
+    isWarning
+  }
+}
+
+mutation DeleteBudget($id: String!) {
+  deleteBudget(id: $id) {
+    success
+    id
+  }
+}

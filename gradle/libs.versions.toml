@@ -47,6 +47,8 @@ h2 = "2.2.224"
 postgresql = "42.7.4"
 logback = "1.5.13"
 graphqlKotlin = "8.0.0"
+apollo = "5.0.0"
+apolloCache = "1.0.1"
 hikari = "5.1.0"
 flyway = "10.22.0"
 exposedJson = "0.53.0"
@@ -114,6 +116,9 @@ h2-database = { group = "com.h2database", name = "h2", version.ref = "h2" }
 postgresql-jdbc = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
 logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
 graphql-kotlin-ktor-server = { group = "com.expediagroup", name = "graphql-kotlin-ktor-server", version.ref = "graphqlKotlin" }
+apollo-runtime = { group = "com.apollographql.apollo", name = "apollo-runtime", version.ref = "apollo" }
+apollo-cache-normalized = { group = "com.apollographql.cache", name = "normalized-cache", version.ref = "apolloCache" }
+apollo-cache-normalized-sqlite = { group = "com.apollographql.cache", name = "normalized-cache-sqlite", version.ref = "apolloCache" }
 hikari-cp = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
 flyway-core = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway" }
 flyway-postgresql = { group = "org.flywaydb", name = "flyway-database-postgresql", version.ref = "flyway" }
@@ -135,4 +140,5 @@ android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.
 android-lint = { id = "com.android.lint", version.ref = "agp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 graphql-gradle = { id = "com.expediagroup.graphql", version.ref = "graphqlKotlin" }
+apollo-android = { id = "com.apollographql.apollo", version.ref = "apollo" }
 

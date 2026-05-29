@@ -1,0 +1,97 @@
+query Expenses($filter: ExpenseFilterInput, $pagination: PaginationInput, $sort: SortInput) {
+  expenses(filter: $filter, pagination: $pagination, sort: $sort) {
+    edges {
+      cursor
+      node {
+        id
+        title
+        description
+        amount
+        date
+        categoryId
+        category {
+          id
+          name
+          color
+          icon
+        }
+        clientId
+        conflictVersion
+        createdAt
+        updatedAt
+        locationLat
+        locationLng
+        receiptUrl
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+    totalCount
+    totalAmount
+  }
+}
+
+query Expense($id: String!) {
+  expense(id: $id) {
+    id
+    title
+    description
+    amount
+    date
+    categoryId
+    category {
+      id
+      name
+      color
+      icon
+    }
+    clientId
+    conflictVersion
+    createdAt
+    updatedAt
+    locationLat
+    locationLng
+    receiptUrl
+  }
+}
+
+mutation CreateExpense($input: CreateExpenseInput!) {
+  createExpense(input: $input) {
+    id
+    title
+    description
+    amount
+    date
+    categoryId
+    clientId
+    conflictVersion
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdateExpense($id: String!, $input: UpdateExpenseInput!) {
+  updateExpense(id: $id, input: $input) {
+    id
+    title
+    description
+    amount
+    date
+    categoryId
+    clientId
+    conflictVersion
+    createdAt
+    updatedAt
+  }
+}
+
+mutation DeleteExpense($id: String!) {
+  deleteExpense(id: $id) {
+    success
+    id
+  }
+}
