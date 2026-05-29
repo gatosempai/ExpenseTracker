@@ -149,9 +149,10 @@ fun AddExpenseSheet(
                     if (!titleError && !amountError) {
                         onSave(
                             Expense(
+                                id = 0, // ORP
                                 title = title,
                                 amount = dAmount,
-                                category = category,
+                                category = category.toString(), // ORP
                                 timestamp = System.currentTimeMillis()
                             )
                         )

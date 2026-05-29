@@ -40,19 +40,20 @@ import dev.oruizp.expensetracker.data.local.Expense
 import dev.oruizp.expensetracker.data.local.ExpenseCategory
 import dev.oruizp.home.data.BudgetCategory
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = viewModel()
+    expenseViewModel : ExpenseViewModel = koinViewModel()
 ) {
 
-    val expenses by viewModel.expenses.collectAsState()
-    val totalSpent by viewModel.totalSpent.collectAsState()
+    //val expenses by expenseViewModel.expenses.collectAsState()
+    val totalSpent by expenseViewModel.totalSpentUiState.collectAsState()
 
     HomeScreenContent(
-        expenses = expenses,
+        //expenses = expenses,
         totalSpent = totalSpent,
         onAddExpense = { viewModel.addExpense(it) }
     )
@@ -61,7 +62,8 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenContent(
-    homeDetails: HomeDetails,
+    //homeDetails: HomeDetails,
+    totalSpent: TotalSpentUiState,
     budgetOverViews: List<BudgetCategory> = emptyList(),
     onAddExpense: (Expense) -> Unit = {},
     onNotificationsClick: () -> Unit = {},
@@ -100,11 +102,11 @@ fun HomeScreenContent(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            TotalSpentCard(totalSpent = totalSpent)
+            TotalSpentCard(totalSpent = totalSpent, 0.0)
 
             BudgetOverviewCard(expenses = budgetOverViews)
 
-            RecentTransactionsview(expenses = expenses)
+            //RecentTransactionsview(expenses = expenses)
         }
 
         if (showBottomSheet) {
@@ -143,11 +145,34 @@ fun formatCurrency(amount: Double): String {
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
+    val now = System.currentTimeMillis()
+    val yesterday = now - 24 * 60 * 60 * 1000
     val sampleExpenses = listOf(
-        Expense(1, "Groceries", 50.0, ExpenseCategory.FOOD),
-        Expense(2, "Bus Fare", 2.5, ExpenseCategory.TRANSPORT),
-        Expense(3, "Movie", 15.0, ExpenseCategory.ENTERTAINMENT),
-        Expense(4, "Rent", 1200.0, ExpenseCategory.BILLS)
+        Expense(1,
+            "Groceries",
+            50.0,
+
+            ExpenseCategory.FOOD.name,
+            yesterday
+        ),
+        Expense(2,
+            "Bus Fare",
+            2.5,
+            ExpenseCategory.TRANSPORT.name,
+            yesterday
+        ),
+        Expense(3,
+            "Movie",
+            15.0,
+            ExpenseCategory.ENTERTAINMENT.name,
+            yesterday
+        ),
+        Expense(4,
+            "Rent",
+            1200.0,
+            ExpenseCategory.BILLS.name,
+            yesterday
+        )
     )
     val sampleBudgetCategory = listOf(
         BudgetCategory("Food", 50.0f, 100.0f, CategoryFood),
@@ -159,8 +184,8 @@ fun HomeScreenPreview() {
     )
     ExpenseTrackerTheme {
         HomeScreenContent(
-            expenses = sampleExpenses,
-            totalSpent = 1267.5,
+           // expenses = sampleExpenses,
+            totalSpent = TotalSpentUiState.Success("1250.00"),
             budgetOverViews = sampleBudgetCategory
         )
     }

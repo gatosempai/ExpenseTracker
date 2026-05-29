@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +25,7 @@ import kotlin.math.abs
 
 @Composable
 fun TotalSpentCard(
-    totalSpent: Double,
+    totalSpent: TotalSpentUiState,
     percentage: Double
 ) {
     Card(
@@ -47,12 +48,27 @@ fun TotalSpentCard(
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = formatCurrency(totalSpent),
-                color = MaterialTheme.colorScheme.onPrimary,
-                style = MaterialTheme.typography.displayMedium,
-                fontWeight = FontWeight.Bold
-            )
+            when (totalSpent) {
+                is TotalSpentUiState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                }
+                is TotalSpentUiState.Success -> {
+                    Text(
+                        text = formatCurrency(totalSpent.totalSpent.toDouble()),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = MaterialTheme.typography.displayMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                else -> {
+                    Text(
+                        text = (totalSpent as TotalSpentUiState.Error).message,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = MaterialTheme.typography.displayMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(8.dp))
             ComparisonBadgeView(percentage)
         }
@@ -96,6 +112,6 @@ fun ComparisonBadgeView(
 @Composable
 fun TotalSpentPreview() {
     ExpenseTrackerTheme {
-        TotalSpentCard(1250.00, -12.0)
+        TotalSpentCard(TotalSpentUiState.Success("1250.00"), -12.0)
     }
 }
