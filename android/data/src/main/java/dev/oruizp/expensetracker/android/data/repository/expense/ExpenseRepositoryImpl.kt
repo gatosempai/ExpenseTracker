@@ -1,16 +1,17 @@
 package dev.oruizp.expensetracker.android.data.repository.expense
 
-import dev.oruizp.expensetracker.android.data.local.ExpenseCategory
+import dev.oruizp.expensetracker.android.data.local.Expense
+import dev.oruizp.expensetracker.android.data.local.ExpenseCategoryData
 import dev.oruizp.expensetracker.android.data.local.ExpenseDao
 import dev.oruizp.expensetracker.android.data.network.NetworkMonitor
 import dev.oruizp.expensetracker.android.data.remote.expense.ExpenseApi
+import dev.oruizp.expensetracker.android.domain.models.ExpenseCategoryDomain
+import dev.oruizp.expensetracker.android.domain.models.ExpenseDomain
 import dev.oruizp.expensetracker.android.domain.repository.ExpenseRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.text.SimpleDateFormat
 import java.util.Locale
-import dev.oruizp.expensetracker.android.data.local.Expense as RoomExpense
-import dev.oruizp.expensetracker.android.domain.models.Expense as DomainExpense
 
 class ExpenseRepositoryImpl(
     private val expenseDao: ExpenseDao,
@@ -18,14 +19,14 @@ class ExpenseRepositoryImpl(
     private val networkMonitor: NetworkMonitor
 ) : ExpenseRepository {
 
-    override fun getAllExpenses(): Flow<List<DomainExpense>> {
+    override fun getAllExpenses(): Flow<List<ExpenseDomain>> {
         return expenseDao.getAllExpenses().map { roomExpenses ->
             if (networkMonitor.isOnline()) {
                 try {
                     val remoteExpenses = remoteApi.getExpenses()
                     roomExpenses.map { room ->
                         remoteExpenses.find { it.id.toLong() == room.id }?.let { dto ->
-                            RoomExpense(
+                            Expense(
                                 id = dto.id.toLong(),
                                 title = dto.title,
                                 amount = dto.amount,
@@ -45,22 +46,22 @@ class ExpenseRepositoryImpl(
         }
     }
 
-    override suspend fun addExpense(expense: DomainExpense) {
-        val roomExpense = RoomExpense(
+    override suspend fun addExpense(expense: ExpenseDomain) {
+        val roomExpense = Expense(
             title = expense.title,
             amount = expense.amount,
-            category = ExpenseCategory.valueOf(expense.category.uppercase()),
+            category = expense.category.toData(),
             timestamp = expense.timestamp,
         )
         expenseDao.insertExpense(roomExpense)
     }
 
-    override suspend fun deleteExpense(expense: DomainExpense) {
-        val roomExpense = RoomExpense(
+    override suspend fun deleteExpense(expense: ExpenseDomain) {
+        val roomExpense = Expense(
             id = expense.id,
             title = expense.title,
             amount = expense.amount,
-            category = ExpenseCategory.valueOf(expense.category.uppercase()),
+            category = expense.category.toData(),
             timestamp = expense.timestamp,
         )
         expenseDao.deleteExpense(roomExpense)
@@ -70,14 +71,14 @@ class ExpenseRepositoryImpl(
         return expenseDao.getTotalSpent().map { it ?: 0.0 }
     }
 
-    private fun mapCategoryId(categoryId: Int): ExpenseCategory {
+    private fun mapCategoryId(categoryId: Int): ExpenseCategoryData {
         return when (categoryId) {
-            1 -> ExpenseCategory.FOOD
-            2 -> ExpenseCategory.TRANSPORT
-            3 -> ExpenseCategory.SHOPPING
-            4 -> ExpenseCategory.BILLS
-            5 -> ExpenseCategory.ENTERTAINMENT
-            else -> ExpenseCategory.OTHER
+            1 -> ExpenseCategoryData.FOOD
+            2 -> ExpenseCategoryData.TRANSPORT
+            3 -> ExpenseCategoryData.SHOPPING
+            4 -> ExpenseCategoryData.BILLS
+            5 -> ExpenseCategoryData.ENTERTAINMENT
+            else -> ExpenseCategoryData.OTHER
         }
     }
 
@@ -99,13 +100,35 @@ class ExpenseRepositoryImpl(
         }
     }
 
-    private fun RoomExpense.toDomain(): DomainExpense {
-        return DomainExpense(
+    private fun Expense.toDomain(): ExpenseDomain {
+        return ExpenseDomain(
             id = id,
             title = title,
             amount = amount,
-            category = category.name,
+            category = category.toDomain(),
             timestamp = timestamp,
         )
+    }
+
+    private fun ExpenseCategoryData.toDomain(): ExpenseCategoryDomain {
+        return when (this) {
+            ExpenseCategoryData.FOOD -> ExpenseCategoryDomain.FOOD
+            ExpenseCategoryData.TRANSPORT -> ExpenseCategoryDomain.TRANSPORT
+            ExpenseCategoryData.SHOPPING -> ExpenseCategoryDomain.SHOPPING
+            ExpenseCategoryData.BILLS -> ExpenseCategoryDomain.BILLS
+            ExpenseCategoryData.ENTERTAINMENT -> ExpenseCategoryDomain.ENTERTAINMENT
+            else -> ExpenseCategoryDomain.OTHER
+        }
+    }
+
+    private fun ExpenseCategoryDomain.toData(): ExpenseCategoryData {
+        return when (this) {
+            ExpenseCategoryDomain.FOOD -> ExpenseCategoryData.FOOD
+            ExpenseCategoryDomain.TRANSPORT -> ExpenseCategoryData.TRANSPORT
+            ExpenseCategoryDomain.SHOPPING -> ExpenseCategoryData.SHOPPING
+            ExpenseCategoryDomain.BILLS -> ExpenseCategoryData.BILLS
+            ExpenseCategoryDomain.ENTERTAINMENT -> ExpenseCategoryData.ENTERTAINMENT
+            else -> ExpenseCategoryData.OTHER
+        }
     }
 }

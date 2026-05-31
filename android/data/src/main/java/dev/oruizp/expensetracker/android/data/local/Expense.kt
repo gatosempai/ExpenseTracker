@@ -3,7 +3,7 @@ package dev.oruizp.expensetracker.android.data.local
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-enum class ExpenseCategory {
+enum class ExpenseCategoryData {
     FOOD,
     TRANSPORT,
     SHOPPING,
@@ -18,6 +18,6 @@ data class Expense(
     val id: Long = 0,
     val title: String,
     val amount: Double,
-    val category: ExpenseCategory,
+    val category: ExpenseCategoryData,
     val timestamp: Long = System.currentTimeMillis()
 )
