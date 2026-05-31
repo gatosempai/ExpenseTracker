@@ -2,12 +2,13 @@ package dev.oruizp.expensetracker.android.domain.usecases.expense
 
 import dev.oruizp.expensetracker.android.domain.models.ExpenseDomain
 import dev.oruizp.expensetracker.android.domain.repository.ExpenseRepository
+import kotlinx.coroutines.flow.Flow
 
-class AddExpenseUseCase(
+class GetExpensesUseCase(
     private val expenseRepository: ExpenseRepository
 ) {
 
-    suspend operator fun invoke(expenseDomain: ExpenseDomain) {
-        return expenseRepository.addExpense(expenseDomain)
+    operator fun invoke(): Flow<List<ExpenseDomain>> {
+        return expenseRepository.getAllExpenses()
     }
 }
