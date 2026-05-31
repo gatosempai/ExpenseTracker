@@ -28,7 +28,7 @@ import dev.oruizp.expensetracker.android.core.theme.CategoryOther
 import dev.oruizp.expensetracker.android.core.theme.CategoryShopping
 import dev.oruizp.expensetracker.android.core.theme.CategoryTransport
 import dev.oruizp.expensetracker.android.core.theme.ExpenseTrackerTheme
-import dev.oruizp.expensetracker.android.features.home.data.BudgetCategory
+import dev.oruizp.expensetracker.android.features.home.state.BudgetCategory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.oruizp.expensetracker.android.core.theme.ExpenseTrackerTheme
-import dev.oruizp.expensetracker.android.features.home.data.TotalSpentUiState
+import dev.oruizp.expensetracker.android.features.home.state.TotalSpentUiState
 import kotlin.math.abs
 
 @Composable

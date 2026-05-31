@@ -34,10 +34,13 @@ import dev.oruizp.expensetracker.android.core.theme.CategoryOther
 import dev.oruizp.expensetracker.android.core.theme.CategoryShopping
 import dev.oruizp.expensetracker.android.core.theme.CategoryTransport
 import dev.oruizp.expensetracker.android.core.theme.ExpenseTrackerTheme
-import dev.oruizp.expensetracker.android.data.local.ExpenseCategory
-import dev.oruizp.expensetracker.android.domain.models.Expense
-import dev.oruizp.expensetracker.android.features.home.data.BudgetCategory
-import dev.oruizp.expensetracker.android.features.home.data.TotalSpentUiState
+import dev.oruizp.expensetracker.android.domain.models.ExpenseDomain
+import dev.oruizp.expensetracker.android.features.home.models.ExpenseCategoryUi
+import dev.oruizp.expensetracker.android.features.home.models.ExpenseUi
+import dev.oruizp.expensetracker.android.features.home.models.HomeDetails
+import dev.oruizp.expensetracker.android.features.home.state.BudgetCategory
+import dev.oruizp.expensetracker.android.features.home.state.ExpensesUiState
+import dev.oruizp.expensetracker.android.features.home.state.TotalSpentUiState
 import dev.oruizp.expensetracker.android.features.home.viewmodel.ExpenseViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -49,12 +52,15 @@ fun HomeScreen(
     expenseViewModel : ExpenseViewModel = koinViewModel()
 ) {
 
-    //val expenses by expenseViewModel.expenses.collectAsState()
+    val expenses by expenseViewModel.getExpensesUiState.collectAsState()
     val totalSpent by expenseViewModel.totalSpentUiState.collectAsState()
 
     HomeScreenContent(
-        //expenses = expenses,
-        totalSpent = totalSpent,
+        homeDetails = HomeDetails(
+            totalSpent = totalSpent,
+            expenses = expenses,
+            percentageOffset = 0.0
+        ),
         onAddExpense = { expenseViewModel.addExpense(it) }
     )
 }
@@ -62,10 +68,9 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenContent(
-    //homeDetails: HomeDetails,
-    totalSpent: TotalSpentUiState,
+    homeDetails: HomeDetails,
     budgetOverViews: List<BudgetCategory> = emptyList(),
-    onAddExpense: (Expense) -> Unit = {},
+    onAddExpense: (ExpenseDomain) -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {}
 ) {
@@ -102,11 +107,11 @@ fun HomeScreenContent(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            TotalSpentCard(totalSpent = totalSpent, 0.0)
+            TotalSpentCard(totalSpent = homeDetails.totalSpent, 0.0)
 
             BudgetOverviewCard(expenses = budgetOverViews)
 
-            //RecentTransactionsview(expenses = expenses)
+            RecentTransactionsView(expenses = homeDetails.expenses)
         }
 
         if (showBottomSheet) {
@@ -126,14 +131,14 @@ fun HomeScreenContent(
     }
 }
 
-fun getCategoryColor(category: ExpenseCategory): Color {
+fun getCategoryColor(category: ExpenseCategoryUi): Color {
     return when (category) {
-        ExpenseCategory.FOOD -> CategoryFood
-        ExpenseCategory.TRANSPORT -> CategoryTransport
-        ExpenseCategory.SHOPPING -> CategoryShopping
-        ExpenseCategory.BILLS -> CategoryBills
-        ExpenseCategory.ENTERTAINMENT -> CategoryEntertainment
-        ExpenseCategory.OTHER -> CategoryOther
+        ExpenseCategoryUi.FOOD -> CategoryFood
+        ExpenseCategoryUi.TRANSPORT -> CategoryTransport
+        ExpenseCategoryUi.SHOPPING -> CategoryShopping
+        ExpenseCategoryUi.BILLS -> CategoryBills
+        ExpenseCategoryUi.ENTERTAINMENT -> CategoryEntertainment
+        ExpenseCategoryUi.OTHER -> CategoryOther
     }
 }
 
@@ -147,30 +152,30 @@ fun formatCurrency(amount: Double): String {
 fun HomeScreenPreview() {
     val now = System.currentTimeMillis()
     val yesterday = now - 24 * 60 * 60 * 1000
-    val sampleExpenses = listOf(
-        Expense(1,
+    val sampleExpense = listOf(
+        ExpenseUi(1,
             "Groceries",
             50.0,
 
-            ExpenseCategory.FOOD.name,
+            ExpenseCategoryUi.FOOD,
             yesterday
         ),
-        Expense(2,
+        ExpenseUi(2,
             "Bus Fare",
             2.5,
-            ExpenseCategory.TRANSPORT.name,
+            ExpenseCategoryUi.TRANSPORT,
             yesterday
         ),
-        Expense(3,
+        ExpenseUi(3,
             "Movie",
             15.0,
-            ExpenseCategory.ENTERTAINMENT.name,
+            ExpenseCategoryUi.ENTERTAINMENT,
             yesterday
         ),
-        Expense(4,
+        ExpenseUi(4,
             "Rent",
             1200.0,
-            ExpenseCategory.BILLS.name,
+            ExpenseCategoryUi.BILLS,
             yesterday
         )
     )
@@ -184,8 +189,11 @@ fun HomeScreenPreview() {
     )
     ExpenseTrackerTheme {
         HomeScreenContent(
-           // expenses = sampleExpenses,
-            totalSpent = TotalSpentUiState.Success("1250.00"),
+            homeDetails = HomeDetails(
+                totalSpent = TotalSpentUiState.Success("1250.00"),
+                expenses = ExpensesUiState.Success(sampleExpense),
+                percentageOffset = 0.0
+            ),
             budgetOverViews = sampleBudgetCategory
         )
     }

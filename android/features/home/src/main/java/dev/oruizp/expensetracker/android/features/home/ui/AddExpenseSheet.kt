@@ -29,19 +29,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.oruizp.expensetracker.android.core.theme.ExpenseTrackerTheme
-import dev.oruizp.expensetracker.android.data.local.ExpenseCategory
-import dev.oruizp.expensetracker.android.domain.models.Expense
-
+import dev.oruizp.expensetracker.android.domain.models.ExpenseCategoryDomain
+import dev.oruizp.expensetracker.android.domain.models.ExpenseDomain
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddExpenseSheet(
     sheetState: SheetState,
     onDismiss: () -> Unit,
-    onSave: (Expense) -> Unit
+    onSave: (ExpenseDomain) -> Unit
 ) {
     var title by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf(ExpenseCategory.FOOD) }
+    var category by remember { mutableStateOf(ExpenseCategoryDomain.FOOD) }
     var expanded by remember { mutableStateOf(false) }
 
     var titleError by remember { mutableStateOf(false) }
@@ -120,7 +119,7 @@ fun AddExpenseSheet(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    ExpenseCategory.entries.forEach { selectionOption ->
+                    ExpenseCategoryDomain.entries.forEach { selectionOption ->
                         DropdownMenuItem(
                             text = {
                                 Text(selectionOption.name.lowercase().replaceFirstChar { it.uppercase() })
@@ -148,11 +147,11 @@ fun AddExpenseSheet(
 
                     if (!titleError && !amountError) {
                         onSave(
-                            Expense(
+                            ExpenseDomain(
                                 id = 0, // ORP
                                 title = title,
                                 amount = dAmount,
-                                category = category.toString(), // ORP
+                                category = category,
                                 timestamp = System.currentTimeMillis()
                             )
                         )

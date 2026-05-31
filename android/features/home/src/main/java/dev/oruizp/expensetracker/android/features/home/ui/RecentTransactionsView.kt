@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,12 +28,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.oruizp.expensetracker.android.core.theme.ExpenseTrackerTheme
 import dev.oruizp.expensetracker.android.core.utils.date.formatTime
-import dev.oruizp.expensetracker.android.data.local.Expense
-import dev.oruizp.expensetracker.android.data.local.ExpenseCategory
+import dev.oruizp.expensetracker.android.features.home.models.ExpenseCategoryUi
+import dev.oruizp.expensetracker.android.features.home.models.ExpenseUi
+import dev.oruizp.expensetracker.android.features.home.state.ExpensesUiState
 import java.util.Locale
 
 @Composable
-fun RecentTransactionsview(expenses: List<Expense>) {
+fun RecentTransactionsView(expenses: ExpensesUiState) {
     Column() {
         Text(
             text = "Recent Transactions",
@@ -40,19 +42,36 @@ fun RecentTransactionsview(expenses: List<Expense>) {
             modifier = Modifier.padding(16.dp)
         )
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 80.dp)
-        ) {
-            items(expenses) { expense ->
-                ExpenseListItem(expense = expense)
+        when (expenses) {
+            is ExpensesUiState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
+            is ExpensesUiState.Success -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 80.dp)
+                ) {
+                    items(expenses.expens) { expense ->
+                        ExpenseListItem(expenseUi = expense)
+                    }
+                }
+            }
+            else -> {
+                Text(
+                    text = (expenses as ExpensesUiState.Error).message,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.displayMedium,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }
 }
 
 @Composable
-fun ExpenseListItem(expense: Expense) {
+fun ExpenseListItem(expenseUi: ExpenseUi) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -69,28 +88,28 @@ fun ExpenseListItem(expense: Expense) {
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(getCategoryColor(expense.category))
+                    .background(getCategoryColor(expenseUi.category))
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = expense.title,
+                    text = expenseUi.title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = expense.category.name.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
+                    text = expenseUi.category.name.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = formatTime(expense.timestamp),
+                    text = formatTime(expenseUi.timestamp),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Text(
-                text = formatCurrency(expense.amount),
+                text = formatCurrency(expenseUi.amount),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -106,15 +125,16 @@ fun ReceentTrasactionsViewPreview() {
     val yesterday = now - 24 * 60 * 60 * 1000
     val lastWeek = now - 7 * 24 * 60 * 60 * 1000
 
-    val sampleExpenses = listOf(
-        Expense(1, "Groceries", 50.0, ExpenseCategory.FOOD, timestamp = now),
-        Expense(2, "Bus Fare", 2.5, ExpenseCategory.TRANSPORT, timestamp = yesterday),
-        Expense(3, "Movie", 15.0, ExpenseCategory.ENTERTAINMENT, timestamp = lastWeek),
-        Expense(4, "Rent", 1200.0, ExpenseCategory.BILLS, timestamp = now)
+    val sampleExpense = listOf(
+        ExpenseUi(1, "Groceries", 50.0, ExpenseCategoryUi.FOOD, timestamp = now),
+        ExpenseUi(2, "Bus Fare", 2.5, ExpenseCategoryUi.TRANSPORT, timestamp = yesterday),
+        ExpenseUi(3, "Movie", 15.0, ExpenseCategoryUi.ENTERTAINMENT, timestamp = lastWeek),
+        ExpenseUi(4, "Rent", 1200.0, ExpenseCategoryUi.BILLS, timestamp = now)
     )
+
     ExpenseTrackerTheme {
-        RecentTransactionsview(
-            expenses = sampleExpenses
+        RecentTransactionsView(
+            expenses = ExpensesUiState.Success(sampleExpense)
         )
     }
 }
