@@ -34,7 +34,7 @@ fun TotalSpentCard(
             .fillMaxWidth()
             .padding(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         shape = RoundedCornerShape(24.dp)
@@ -45,7 +45,6 @@ fun TotalSpentCard(
         ) {
             Text(
                 text = "Total Spent",
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -56,7 +55,6 @@ fun TotalSpentCard(
                 is TotalSpentUiState.Success -> {
                     Text(
                         text = formatCurrency(totalSpent.totalSpent.toDouble()),
-                        color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.displayMedium,
                         fontWeight = FontWeight.Bold
                     )

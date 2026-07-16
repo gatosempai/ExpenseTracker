@@ -19,6 +19,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,14 +35,27 @@ import dev.oruizp.expensetracker.android.features.home.state.ExpensesUiState
 import java.util.Locale
 
 @Composable
-fun RecentTransactionsView(expenses: ExpensesUiState) {
+fun RecentTransactionsView(
+    expenses: ExpensesUiState,
+    onAllTransactionsClick: () -> Unit = {},
+    onItemClick: (Long) -> Unit = {}
+) {
     Column() {
-        Text(
-            text = "Recent Transactions",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(16.dp)
-        )
-
+        Row() {
+            Text(
+                text = "Recent Transactions",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(16.dp)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            TextButton(onClick = onAllTransactionsClick) {
+                Text(
+                    text = "See All",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
         when (expenses) {
             is ExpensesUiState.Loading -> {
                 CircularProgressIndicator(
@@ -54,7 +68,10 @@ fun RecentTransactionsView(expenses: ExpensesUiState) {
                     contentPadding = PaddingValues(bottom = 80.dp)
                 ) {
                     items(expenses.expens) { expense ->
-                        ExpenseListItem(expenseUi = expense)
+                        ExpenseListItem(
+                            expenseUi = expense,
+                            onItemClick = onItemClick
+                        )
                     }
                 }
             }
@@ -71,12 +88,16 @@ fun RecentTransactionsView(expenses: ExpensesUiState) {
 }
 
 @Composable
-fun ExpenseListItem(expenseUi: ExpenseUi) {
+fun ExpenseListItem(
+    expenseUi: ExpenseUi,
+    onItemClick: (Long) -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        onClick = { onItemClick(expenseUi.id) }
     ) {
         Row(
             modifier = Modifier

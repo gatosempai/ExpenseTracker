@@ -1,5 +1,6 @@
 package dev.oruizp.expensetracker.android.features.home.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import dev.oruizp.expensetracker.android.core.theme.CategoryBills
 import dev.oruizp.expensetracker.android.core.theme.CategoryEntertainment
@@ -51,7 +53,7 @@ import java.util.Locale
 fun HomeScreen(
     expenseViewModel : ExpenseViewModel = koinViewModel()
 ) {
-
+    val context = LocalContext.current
     val expenses by expenseViewModel.getExpensesUiState.collectAsState()
     val totalSpent by expenseViewModel.totalSpentUiState.collectAsState()
 
@@ -61,7 +63,22 @@ fun HomeScreen(
             expenses = expenses,
             percentageOffset = 0.0
         ),
-        onAddExpense = { expenseViewModel.addExpense(it) }
+        onAddExpense = { expenseViewModel.addExpense(it) },
+        onNotificationsClick = {
+            Toast.makeText(context, "Notifications Clicked", Toast.LENGTH_SHORT).show()
+        },
+        onSettingsClick = {
+            Toast.makeText(context, "Settings Clicked", Toast.LENGTH_SHORT).show()
+        },
+        onSeeAllTransactionsClick = {
+            Toast.makeText(context, "See All Transactions Clicked", Toast.LENGTH_SHORT).show()
+        },
+        onBudgetOverviewClick = {
+            Toast.makeText(context, "Budget Overview Clicked", Toast.LENGTH_SHORT).show()
+        },
+        onTransactionClick = { id ->
+            Toast.makeText(context, "Transaction $id Clicked", Toast.LENGTH_SHORT).show()
+        }
     )
 }
 
@@ -72,7 +89,10 @@ fun HomeScreenContent(
     budgetOverViews: List<BudgetCategory> = emptyList(),
     onAddExpense: (ExpenseDomain) -> Unit = {},
     onNotificationsClick: () -> Unit = {},
-    onSettingsClick: () -> Unit = {}
+    onSettingsClick: () -> Unit = {},
+    onSeeAllTransactionsClick: () -> Unit = {},
+    onBudgetOverviewClick: () -> Unit = {},
+    onTransactionClick: (Long) -> Unit = {}
 ) {
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
@@ -87,12 +107,12 @@ fun HomeScreenContent(
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
                 actions = {
-                    IconButton(onClick = {
-                        // Got to notifications
-                    }) { Icon(Icons.Default.Notifications, contentDescription = "Notifications") }
-                    IconButton(onClick = {
-                        // Got to settings
-                    }) { Icon(Icons.Default.Settings, contentDescription = "Settings") }
+                    IconButton(onClick = onNotificationsClick) {
+                        Icon(Icons.Default.Notifications, contentDescription = "Notifications")
+                    }
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(Icons.Default.Settings, contentDescription = "Settings")
+                    }
                 }
             )
         },
@@ -109,9 +129,16 @@ fun HomeScreenContent(
         ) {
             TotalSpentCard(totalSpent = homeDetails.totalSpent, 0.0)
 
-            BudgetOverviewCard(expenses = budgetOverViews)
+            BudgetOverviewCard(
+                expenses = budgetOverViews,
+                onClick = onBudgetOverviewClick
+            )
 
-            RecentTransactionsView(expenses = homeDetails.expenses)
+            RecentTransactionsView(
+                expenses = homeDetails.expenses,
+                onAllTransactionsClick = onSeeAllTransactionsClick,
+                onItemClick = onTransactionClick
+            )
         }
 
         if (showBottomSheet) {

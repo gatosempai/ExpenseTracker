@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import dev.oruizp.expensetracker.android.app.ui.MyApp
 import dev.oruizp.expensetracker.android.core.theme.ExpenseTrackerTheme
 import dev.oruizp.expensetracker.android.features.home.ui.HomeScreen
 
@@ -14,6 +15,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ExpenseTrackerTheme {
                 HomeScreen()
+                MyApp()
             }
         }
     }
