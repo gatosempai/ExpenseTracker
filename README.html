@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expense Tracker</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    color: #1a1a2e;
+    background: #fff;
+  }
+  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .5rem; }
+  h2 { border-bottom: 1px solid #eee; padding-bottom: .3rem; margin-top: 2rem; }
+  h3 { margin-top: 1.5rem; }
+  a { color: #0366d6; }
+  img { max-width: 100%; }
+  pre, code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+  code {
+    background: #f0f0f0;
+    padding: .2em .4em;
+    border-radius: 3px;
+    font-size: 85%;
+  }
+  pre {
+    background: #f6f8fa;
+    padding: 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    line-height: 1.45;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    font-size: 100%;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 14px;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    text-align: left;
+  }
+  th { background: #f6f8fa; font-weight: 600; }
+  tr:nth-child(even) td { background: #fafbfc; }
+  hr { border: none; border-top: 1px solid #ddd; margin: 2rem 0; }
+  blockquote {
+    border-left: 4px solid #ddd;
+    margin: 0;
+    padding: 0 1em;
+    color: #6a737d;
+  }
+  ul, ol { padding-left: 2em; }
+  .badge img { vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<h1>Expense Tracker</h1>
+
+<p class="badge">
+  <img src="https://img.shields.io/badge/Platform-Android-3DDC84?logo=android" alt="Android">
+  <img src="https://img.shields.io/badge/Kotlin-2.2.10-7F52FF?logo=kotlin" alt="Kotlin">
+  <img src="https://img.shields.io/badge/Compose-BOM_2024.09-4285F4?logo=jetpackcompose" alt="Compose">
+  <img src="https://img.shields.io/badge/Backend-Ktor_2.3.12-007396?logo=ktor" alt="Ktor">
+  <img src="https://img.shields.io/badge/License-MIT-yellow" alt="License">
+</p>
+
+<p>A full-stack expense tracking application with an Android client (Jetpack Compose) and a Ktor backend, sharing common business logic via KMP.</p>
+
+<hr>
+
+<h2>Overview</h2>
+<p>ExpenseTracker helps users log, categorize, and analyze their daily spending. The Android app provides a rich Material 3 interface with offline-first Room storage, while the Ktor backend syncs data across devices and provides analytics endpoints. A KMP shared module (<code>:common</code>) enables code reuse between Android and potential iOS clients.</p>
+
+<hr>
+
+<h2>Screenshots</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Home Dashboard</th>
+<th style="text-align:center">All Transactions</th>
+<th style="text-align:center">Budgets</th>
+<th style="text-align:center">Reports</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>(TODO)</em></td>
+<td style="text-align:center"><em>(TODO)</em></td>
+<td style="text-align:center"><em>(TODO)</em></td>
+<td style="text-align:center"><em>(TODO)</em></td>
+</tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2>Architecture</h2>
+
+<h3>Clean Architecture Layers</h3>
+<pre><code>┌──────────────────────────────────────────────────────────────┐
+│                    PRESENTATION LAYER                         │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │  Compose UI (Screens / Components)                     │  │
+│  │  ViewModels (StateFlow / State)                        │  │
+│  └────────────────────────────────────────────────────────┘  │
+├──────────────────────────────────────────────────────────────┤
+│                      DOMAIN LAYER                             │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │  Use Cases / Interactors                               │  │
+│  │  Repository Interfaces                                 │  │
+│  │  Domain Models                                         │  │
+│  └────────────────────────────────────────────────────────┘  │
+├──────────────────────────────────────────────────────────────┤
+│                        DATA LAYER                             │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │  Room DAOs (Local DB)                                  │  │
+│  │  Retrofit API (Remote)                                 │  │
+│  │  Repository Implementations                            │  │
+│  │  DataStore (Preferences)                               │  │
+│  └────────────────────────────────────────────────────────┘  │
+├──────────────────────────────────────────────────────────────┤
+│                        CORE LAYER                             │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │  DI (Koin) / Extensions / Utilities / Common UI        │  │
+│  └────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────┘</code></pre>
+
+<h3>Module Dependency Graph</h3>
+<pre><code>                    ┌──────────────────────┐
+                    │   :common (KMP)      │
+                    └──────┬───────────────┘
+                           │ expect/actual
+          ┌────────────────┼────────────────┐
+          │                │                │
+          ▼                ▼                ▼
+   ┌────────────┐  ┌──────────────┐  ┌──────────┐
+   │ :android:  │  │ :android:    │  │ :backend │
+   │   app      │  │   features/* │  │ (Ktor)   │
+   └─────┬──────┘  └──────┬───────┘  └──────────┘
+         │                │
+         ▼                ▼
+   ┌──────────────────────────────┐
+   │  :android:core               │
+   │  :android:data               │
+   │  :android:domain             │
+   └──────────────────────────────┘</code></pre>
+
+<h3>Data Flow</h3>
+<pre><code>User Action → Composable → Intent/Event → ViewModel → Repository → [Room | API]
+                                    │                          │
+                                    ▼                          ▼
+                              StateFlow ◄────── Flow ◄────────┘
+                                    │
+                                    ▼
+                           Composable recomposes</code></pre>
+
+<hr>
+
+<h2>Tech Stack</h2>
+
+<h3>Android Client</h3>
+<table>
+<thead>
+<tr><th>Category</th><th>Library</th><th>Version</th></tr>
+</thead>
+<tbody>
+<tr><td>Language</td><td>Kotlin</td><td>2.2.10</td></tr>
+<tr><td>UI</td><td>Jetpack Compose (BOM)</td><td>2024.09.00</td></tr>
+<tr><td>UI</td><td>Material 3</td><td>BOM</td></tr>
+<tr><td>Navigation</td><td>Navigation Compose</td><td>2.8.9</td></tr>
+<tr><td>Database</td><td>Room (KSP)</td><td>2.7.0</td></tr>
+<tr><td>ViewModel</td><td>lifecycle-viewmodel-compose</td><td>2.8.7</td></tr>
+<tr><td>DI</td><td><em>(planned: Koin)</em></td><td>—</td></tr>
+<tr><td>Networking</td><td>Retrofit + Moshi</td><td>2.12.0</td></tr>
+<tr><td>Image Loading</td><td>Coil Compose</td><td>2.7.0</td></tr>
+<tr><td>Preferences</td><td>DataStore Preferences</td><td>1.1.7</td></tr>
+<tr><td>Location</td><td>Play Services Location</td><td>21.3.0</td></tr>
+<tr><td>Camera</td><td>CameraX</td><td>1.5.0</td></tr>
+<tr><td>Permissions</td><td>Accompanist Permissions</td><td>0.37.3</td></tr>
+<tr><td>Build</td><td>AGP</td><td>9.1.1</td></tr>
+<tr><td>Min SDK</td><td>—</td><td>24</td></tr>
+<tr><td>Target SDK</td><td>—</td><td>36</td></tr>
+</tbody>
+</table>
+
+<h3>Backend</h3>
+<table>
+<thead>
+<tr><th>Category</th><th>Library</th><th>Version</th></tr>
+</thead>
+<tbody>
+<tr><td>Framework</td><td>Ktor (Netty)</td><td>2.3.12</td></tr>
+<tr><td>ORM</td><td>Exposed (Core/DAO/JDBC)</td><td>0.53.0</td></tr>
+<tr><td>DI</td><td>Koin</td><td>3.5.6</td></tr>
+<tr><td>Serialization</td><td>kotlinx-serialization</td><td>1.7.3</td></tr>
+<tr><td>Database (dev)</td><td>H2 (in-memory)</td><td>2.2.224</td></tr>
+<tr><td>Database (prod)</td><td>PostgreSQL</td><td>42.7.4</td></tr>
+<tr><td>Logging</td><td>Logback</td><td>1.5.13</td></tr>
+</tbody>
+</table>
+
+<h3>Shared (KMP)</h3>
+<table>
+<thead>
+<tr><th>Category</th><th>Library</th><th>Version</th></tr>
+</thead>
+<tbody>
+<tr><td>Platform</td><td>Kotlin Multiplatform</td><td>2.2.10</td></tr>
+<tr><td>Coroutines</td><td>kotlinx-coroutines</td><td>1.10.2</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2>Project Structure</h2>
+<pre><code>ExpenseTracker/
+├── android/
+│   ├── app/                          # Main application module
+│   │   └── src/main/java/dev/oruizp/expensetracker/
+│   │       ├── MainActivity.kt       # Single-activity entry point
+│   │       ├── data/                 # Room DB, DAO, Entities
+│   │       │   ├── Expense.kt
+│   │       │   ├── ExpenseDao.kt
+│   │       │   └── ExpenseDatabase.kt
+│   │       └── ui/
+│   │           ├── home/             # Home screen + ViewModel
+│   │           └── theme/            # Material 3 theme
+│   ├── core/                         # Shared utilities, DI
+│   ├── data/                         # Data layer (repositories)
+│   ├── domain/                       # Domain layer (models, use cases)
+│   └── features/
+│       ├── transactions/             # Transaction list + detail
+│       ├── budgets/                  # Budget management
+│       ├── categories/               # Category management
+│       ├── reports/                  # Charts & analytics
+│       └── settings/                 # App preferences
+├── backend/                          # Ktor server (port 8080)
+│   └── src/main/kotlin/.../backend/
+│       └── Application.kt           # Server entry point
+├── common/                           # KMP shared module
+├── gradle/
+│   └── libs.versions.toml           # Version catalog
+├── build.gradle.kts                  # Root build file
+├── settings.gradle.kts               # Module includes
+└── AGENTS.md                         # Dev agent instructions</code></pre>
+
+<hr>
+
+<h2>UI/UX Design Specification</h2>
+
+<h3>Design System</h3>
+
+<h4>Color Palette</h4>
+<table>
+<thead>
+<tr><th>Token</th><th>Light</th><th>Dark</th><th>Usage</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Primary</code></td><td><code>#006D32</code></td><td><code>#7ED991</code></td><td>Buttons, selected state, total card background</td></tr>
+<tr><td><code>OnPrimary</code></td><td><code>#FFFFFF</code></td><td><code>#003917</code></td><td>Text/icons on primary</td></tr>
+<tr><td><code>PrimaryContainer</code></td><td><code>#99F6AB</code></td><td><code>#005224</code></td><td>TopAppBar, chip selected</td></tr>
+<tr><td><code>OnPrimaryContainer</code></td><td><code>#00210B</code></td><td><code>#99F6AB</code></td><td>Text on primary container</td></tr>
+<tr><td><code>Secondary</code></td><td><code>#4F6352</code></td><td><em>(default)</em></td><td>Toggle buttons</td></tr>
+<tr><td><code>SecondaryContainer</code></td><td><code>#D2E8D3</code></td><td><em>(default)</em></td><td>Chips, badges</td></tr>
+<tr><td><code>Tertiary</code></td><td><code>#3B6470</code></td><td><em>(default)</em></td><td>Accents</td></tr>
+<tr><td><code>Background</code></td><td><code>#FBFDF8</code></td><td><code>#191C19</code></td><td>Page backgrounds</td></tr>
+<tr><td><code>Surface</code></td><td><code>#FBFDF8</code></td><td><code>#191C19</code></td><td>Card &amp; sheet backgrounds</td></tr>
+<tr><td><code>Error</code></td><td><code>#BA1A1A</code></td><td><code>#BA1A1A</code></td><td>Critical warnings, destructive actions</td></tr>
+<tr><td><code>ErrorContainer</code></td><td><code>#FFDAD6</code></td><td><code>#FFDAD6</code></td><td>Error banners</td></tr>
+<tr><td><code>OnSurfaceVariant</code></td><td>—</td><td>—</td><td>Secondary text</td></tr>
+</tbody>
+</table>
+
+<h4>Category Colors</h4>
+<table>
+<thead>
+<tr><th>Category</th><th>Color</th><th>Hex</th></tr>
+</thead>
+<tbody>
+<tr><td>Food</td><td>Red</td><td><code>#FF5252</code></td></tr>
+<tr><td>Transport</td><td>Blue</td><td><code>#448AFF</code></td></tr>
+<tr><td>Shopping</td><td>Orange</td><td><code>#FFAB40</code></td></tr>
+<tr><td>Bills</td><td>Purple</td><td><code>#7C4DFF</code></td></tr>
+<tr><td>Entertainment</td><td>Pink</td><td><code>#E040FB</code></td></tr>
+<tr><td>Other</td><td>Grey</td><td><code>#9E9E9E</code></td></tr>
+</tbody>
+</table>
+
+<h4>Typography</h4>
+<table>
+<thead>
+<tr><th>Style</th><th>Size</th><th>Weight</th><th>Line Height</th><th>Usage</th></tr>
+</thead>
+<tbody>
+<tr><td><code>displayLarge</code></td><td>57sp</td><td>Bold</td><td>64sp</td><td>Transaction detail amount</td></tr>
+<tr><td><code>displayMedium</code></td><td>45sp</td><td>Bold</td><td>52sp</td><td>Dashboard total</td></tr>
+<tr><td><code>headlineSmall</code></td><td>24sp</td><td>Normal</td><td>32sp</td><td>Sheet/modal titles</td></tr>
+<tr><td><code>titleLarge</code></td><td>22sp</td><td>Normal</td><td>28sp</td><td>Section headers</td></tr>
+<tr><td><code>titleMedium</code></td><td>16sp</td><td>SemiBold</td><td>24sp</td><td>Transaction/item title</td></tr>
+<tr><td><code>bodyLarge</code></td><td>16sp</td><td>Normal</td><td>24sp</td><td>Descriptions, body text</td></tr>
+<tr><td><code>bodySmall</code></td><td>14sp</td><td>Normal</td><td>20sp</td><td>Subtitles, dates, metadata</td></tr>
+<tr><td><code>labelSmall</code></td><td>11sp</td><td>Medium</td><td>16sp</td><td>Chip labels, badges</td></tr>
+</tbody>
+</table>
+
+<h4>Spacing Grid</h4>
+<p>Base unit: <code>4dp</code></p>
+<table>
+<thead>
+<tr><th>Token</th><th>Size</th><th>Usage</th></tr>
+</thead>
+<tbody>
+<tr><td><code>spacing_xs</code></td><td>4dp</td><td>Icon margins, dot spacing</td></tr>
+<tr><td><code>spacing_sm</code></td><td>8dp</td><td>List item gaps, chip spacing</td></tr>
+<tr><td><code>spacing_md</code></td><td>12dp</td><td>In-card grouping</td></tr>
+<tr><td><code>spacing_lg</code></td><td>16dp</td><td>Screen padding, card padding</td></tr>
+<tr><td><code>spacing_xl</code></td><td>24dp</td><td>Section spacing</td></tr>
+<tr><td><code>spacing_xxl</code></td><td>32dp</td><td>Hero section margins</td></tr>
+<tr><td><code>spacing_3xl</code></td><td>48dp</td><td>Full-screen empty state top margin</td></tr>
+</tbody>
+</table>
+
+<h4>Shapes</h4>
+<table>
+<thead>
+<tr><th>Element</th><th>Shape</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>Cards</td><td>RoundedCorner</td><td>12dp</td></tr>
+<tr><td>Total Spent Card</td><td>RoundedCorner</td><td>24dp</td></tr>
+<tr><td>Category icons</td><td>Circle</td><td>—</td></tr>
+<tr><td>Filter chips</td><td>RoundedCorner</td><td>20dp</td></tr>
+<tr><td>Buttons</td><td>RoundedCorner</td><td>large (M3 default)</td></tr>
+<tr><td>Bottom sheets</td><td>RoundedCorner (top)</td><td>24dp</td></tr>
+</tbody>
+</table>
+
+<h3>Navigation Architecture</h3>
+<pre><code>Bottom Nav (5 tabs):
+┌──────────┬────────────┬──────────┬──────────┬──────────┐
+│   Home   │Transactions│ Budgets  │ Reports  │ Settings │
+│  (home)  │  (txns)    │ (budgets)│ (reports)│(settings)│
+└──────────┴────────────┴──────────┴──────────┴──────────┘</code></pre>
+
+<h4>Route Table</h4>
+<table>
+<thead>
+<tr><th>Route Pattern</th><th>Screen</th><th>Module</th><th>Notes</th></tr>
+</thead>
+<tbody>
+<tr><td><code>home</code></td><td>Dashboard</td><td><code>:features:home</code></td><td>Entry point</td></tr>
+<tr><td><code>transactions</code></td><td>Transaction list</td><td><code>:features:transactions</code></td><td>Filterable, searchable</td></tr>
+<tr><td><code>transactions/{id}</code></td><td>Transaction detail</td><td><code>:features:transactions</code></td><td>View / edit / delete</td></tr>
+<tr><td><code>transactions/add</code></td><td>Add transaction</td><td><code>:features:transactions</code></td><td>Opens inline or as dialog</td></tr>
+<tr><td><code>budgets</code></td><td>Budget list</td><td><code>:features:budgets</code></td><td>Progress indicators</td></tr>
+<tr><td><code>budgets/add</code></td><td>Add budget</td><td><code>:features:budgets</code></td><td>Per-category allocation</td></tr>
+<tr><td><code>budgets/{id}/edit</code></td><td>Edit budget</td><td><code>:features:budgets</code></td><td>Adjust limits</td></tr>
+<tr><td><code>categories</code></td><td>Category list</td><td><code>:features:categories</code></td><td>Manage categories</td></tr>
+<tr><td><code>categories/add</code></td><td>Add category</td><td><code>:features:categories</code></td><td>Name + color picker</td></tr>
+<tr><td><code>reports</code></td><td>Reports dashboard</td><td><code>:features:reports</code></td><td>Charts &amp; summaries</td></tr>
+<tr><td><code>reports/monthly</code></td><td>Monthly breakdown</td><td><code>:features:reports</code></td><td>Detailed period report</td></tr>
+<tr><td><code>reports/yearly</code></td><td>Yearly overview</td><td><code>:features:reports</code></td><td>Annual trends</td></tr>
+<tr><td><code>settings</code></td><td>Settings</td><td><code>:features:settings</code></td><td>Preferences, export, about</td></tr>
+</tbody>
+</table>
+
+<h4>Navigation Patterns</h4>
+<table>
+<thead>
+<tr><th>Pattern</th><th>Behavior</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Bottom nav</strong></td><td>Each tab has its own navigation stack (save/restore state via <code>saveState</code>/<code>restoreState</code>)</td></tr>
+<tr><td><strong>Deep link (notification)</strong></td><td><code>expensetracker://transactions/{id}</code> → opens detail directly</td></tr>
+<tr><td><strong>Deep link (widget)</strong></td><td><code>expensetracker://transactions/add</code> → opens add screen</td></tr>
+<tr><td><strong>Up navigation</strong></td><td>Pop back stack; if at root of tab, switch to Home tab</td></tr>
+<tr><td><strong>Unsaved changes</strong></td><td>Show confirmation dialog before navigating away from forms</td></tr>
+<tr><td><strong>Pull-to-refresh</strong></td><td>On transaction list, budget list, reports (re-fetch from remote)</td></tr>
+<tr><td><strong>Swipe-to-delete</strong></td><td>Transaction list items → reveals delete action with undo snackbar</td></tr>
+</tbody>
+</table>
+
+<h3>Screen-by-Screen Design</h3>
+
+<hr>
+
+<h4>1. HOME / DASHBOARD</h4>
+<pre><code>┌──────────────────────────────────────────┐
+│  ←▶ Expense Tracker                🔔 ⚙️ │  TopAppBar (primaryContainer)
+├──────────────────────────────────────────┤
+│  ┌──────────────────────────────────┐    │
+│  │  Total Spent                     │    │  Card (primary bg, R=24dp, elev=8dp)
+│  │  $1,250.00                       │    │  displayMedium, Bold, OnPrimary
+│  │  ┌──────────────────────────┐    │    │
+│  │  │ ▲ 12% vs last month     │    │    │  Comparison badge
+│  │  └──────────────────────────┘    │    │
+│  └──────────────────────────────────┘    │
+│                                          │
+│  ┌─ Budget Overview ─────────────────┐   │
+│  │  [Food ▓▓░░]  [Bills ▓▓▓░]  [Tr…│   │  HorizontalScroll row
+│  │  Each: 120×72dp card              │   │  Progress bar, label, amount
+│  └────────────────────────────────────┘   │
+│                                          │
+│  Recent Transactions          → See All  │  titleLarge + TextButton
+│  ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐     │
+│  │  🍔 Groceries         -$45.00 │     │  ExpenseListItem
+│  │     Today 2:30pm               │     │  H=72dp, R=12dp, elev=2dp
+│  ├ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┤     │
+│  │  🚌 Bus fare          -$2.50  │     │
+│  │     Today 8:15am               │     │
+│  ├ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┤     │
+│  │  🛒 Amazon            -$89.99 │     │
+│  └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘     │
+│                                          │
+│                                    [＋]  │  FAB (primary, elev=6dp)
+├──────────────────────────────────────────┤
+│  Home │ Trans │ Budget │ Rprts │ Settngs │  BottomNavBar
+└──────────────────────────────────────────┘</code></pre>
+
+<h4>2. ALL TRANSACTIONS</h4>
+<pre><code>┌──────────────────────────────────────────┐
+│  ← Transactions                   🔍 ＋  │  TopAppBar
+├──────────────────────────────────────────┤
+│  [All][Food][Transport][Shop][Bills][…]  │  FilterChipRow (horizontal scroll)
+├──────────────────────────────────────────┤
+│  ┌─ Search transactions ──────────────┐  │
+│  │  🔍                                │  │  SearchBar (text field with icon)
+│  └────────────────────────────────────┘  │
+│                                          │
+│  THIS MONTH — 6 transactions     $630.49│  Sticky header (date section)
+│  ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐     │
+│  │  🍔 Groceries         -$45.00 │     │  ← Swipe left → reveal [Delete]
+│  │     Today 2:30pm               │     │     Swipe → Undo snackbar (5s)
+│  ├ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┤     │
+│  │  🚌 Bus fare          -$2.50  │     │
+│  └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘     │
+│                                          │
+│  YESTERDAY                       $89.99 │
+│  ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐     │
+│  │  🛒 Amazon            -$89.99 │     │
+│  └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘     │
+│                                          │
+│  MON, MAY 22                    $312.00 │
+│  ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐     │
+│  │  💡 Electricity        -$120.00│     │
+│  ├ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┤     │
+│  │  🏪 Costco             -$192.00│     │
+│  └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘     │
+│                                          │
+│                              [Load more] │  Pagination button
+├──────────────────────────────────────────┤
+│  Home │ Trans │ Budget │ Rprts │ Settngs │
+└──────────────────────────────────────────┘</code></pre>
+
+<h4>3. TRANSACTION DETAIL</h4>
+<pre><code>┌──────────────────────────────────────────┐
+│  ← Transactions                  ✎ 🗑    │  TopAppBar with Edit + Delete
+├──────────────────────────────────────────┤
+│                                          │
+│              🍔                          │  Category icon (64dp circle)
+│              Groceries                   │  bodyLarge, onSurfaceVariant
+│                                          │
+│              $45.00                      │  displayLarge, Bold, centered
+│                                          │
+│          Today · 2:30 PM                 │  bodyMedium, onSurfaceVariant
+│                                          │
+│  ┌──────────────────────────────────┐    │
+│  │  Description                     │    │  Label "Description"
+│  │  Weekly supermarket run          │    │  Value (multiline if long)
+│  └──────────────────────────────────┘    │
+│                                          │
+│  ┌──────────────────────────────────┐    │
+│  │  Category          Groceries ▾   │    │  Editable dropdown (edit mode)
+│  └──────────────────────────────────┘    │
+│                                          │
+│  ┌──────────────────────────────────┐    │
+│  │  Amount                   $45.00 ▾   │    │  Editable number field
+│  └──────────────────────────────────┘    │
+│                                          │
+│  ┌──────────────────────────────────┐    │
+│  │  Date & Time   Today 2:30 PM ▾   │    │  Editable date picker
+│  └──────────────────────────────────┘    │
+│                                          │
+│  ┌──────────────────────────────────┐    │
+│  │  Attach Receipt (optional)       │    │  Camera / Gallery button
+│  └──────────────────────────────────┘    │
+│                                          │
+│  [            Save Changes          ]    │  Primary button (edit mode only)
+│  [              Delete              ]    │  Destructive button (red, with confirm dialog)
+└──────────────────────────────────────────┘</code></pre>
+
+<h4>4. ADD EXPENSE</h4>
+<pre><code>╔══════════════════════════════════════════╗
+║          Add New Expense                 ║  ←────── Drag handle
+╠══════════════════════════════════════════╣
+║                                          ║  ModalBottomSheet
+║  ┌─ Title ──────────────────────────┐   ║  (top R=24dp)
+║  │  e.g. Weekly groceries           │   ║
+║  │  ┌──────────────────────────┐    │   ║  OutlinedTextField
+║  │  │ Title cannot be empty    │    │   ║  Error state (red border + helper text)
+║  │  └──────────────────────────┘    │   ║
+║  └──────────────────────────────────┘   ║
+║                                          ║
+║  ┌─ Amount ────────────────────────┐   ║
+║  │  45.00                         │   ║  OutlinedTextField (Decimal keyboard)
+║  │  ┌──────────────────────────┐    │   ║
+║  │  │ Enter a valid amount     │    │   ║  Error state
+║  │  └──────────────────────────┘    │   ║
+║  └──────────────────────────────────┘   ║
+║                                          ║
+║  ┌─ Category ─────────────────────┐   ║
+║  │  🍔 Food                    ▾  │   ║  ExposedDropdownMenuBox
+║  └──────────────────────────────────┘   ║
+║                                          ║
+║  ┌─ Date ─────────────────────────┐   ║
+║  │  May 25, 2026               📅 │   ║  DatePicker trigger
+║  └──────────────────────────────────┘   ║
+║                                          ║
+║  ┌─ Receipt (optional) ───────────┐   ║
+║  │  📷 Tap to attach photo        │   ║  Camera/gallery button
+║  └──────────────────────────────────┘   ║
+║                                          ║
+║  ┌──────────────────────────────────┐   ║
+║  │        Save Expense              │   ║  Full-width Button (primary)
+║  └──────────────────────────────────┘   ║
+║                                          ║
+╚══════════════════════════════════════════╝</code></pre>
+
+<h4>5. BUDGETS</h4>
+<pre><code>┌──────────────────────────────────────────┐
+│  ← Budgets                         ＋    │  TopAppBar
+├──────────────────────────────────────────┤
+│                                          │
+│  ┌─── Monthly Overview ───────────────┐  │
+│  │           $1,200 / $2,000          │  │  CircularProgressIndicator (R=60dp)
+│  │               ▓▓▓▓▓▓▓░░░          │  │  Stroke width 12dp
+│  │               60% used             │  │  Center text: percentage
+│  │               ⏱ 18 days left      │  │  Subtitle below ring
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌─── 🍔 Food ───────────────────────┐  │
+│  │  ▓▓▓▓▓▓▓▓░░░░░                   │  │  LinearProgressIndicator (H=8dp, R=4dp)
+│  │  $450 used of $600 · 75%         │  │  Label + amount
+│  │  ⏱ 18 days left                  │  │  Days remaining
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌─── 🚌 Transport ─────────────────┐   │
+│  │  ▓▓▓▓▓░░░░░░░░░                  │   │
+│  │  $80 used of $200 · 40%          │   │
+│  │  ⏱ 18 days left                  │   │
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌─── 💡 Bills ─────────────────────┐   │
+│  │  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ← Red/Orange    │   │  ⚠ Exceeds 90% threshold
+│  │  $500 used of $500 · 100% ⚠     │   │
+│  │  ⏱ 18 days left                  │   │
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌─── 🎮 Entertainment ────────────┐   │
+│  │  ░░░░░░░░░░░░░░                  │   │  Empty progress (0%)
+│  │  $0 used of $100 · 0%           │   │
+│  └────────────────────────────────────┘  │
+├──────────────────────────────────────────┤
+│  Home │ Trans │ Budget │ Rprts │ Settngs │
+└──────────────────────────────────────────┘</code></pre>
+
+<h4>6. REPORTS / ANALYTICS</h4>
+<pre><code>┌──────────────────────────────────────────┐
+│  ← Reports                   May 2026 ▾  │  TopAppBar with period picker
+├──────────────────────────────────────────┤
+│                                          │
+│  ┌─── Spending Breakdown ─────────────┐  │
+│  │                                     │  │
+│  │       ┌─────┐                      │  │  Donut/Pie chart
+│  │    ┌──┤     ├──┐                   │  │  Each slice = category color
+│  │    │  └─────┘  │                   │  │  Center total: $1,250
+│  │    └───────────┘                   │  │
+│  │                                     │  │
+│  │  🍔 Food            $562   45% ▓▓▓▓│  │  Legend with color dot
+│  │  🚌 Transport       $250   20% ▓▓  │  │
+│  │  🛒 Shopping        $188   15% ▓   │  │
+│  │  💡 Bills           $150   12% ▓   │  │
+│  │  🎮 Entertainment   $100    8% ▓   │  │
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌─── Daily Trend ───────────────────┐  │
+│  │                                     │  │  Line chart
+│  │    ▲ $80                           │  │  X-axis: days of month
+│  │    │     ╱╲    ╱╲                  │  │  Y-axis: amount
+│  │    │   ╱  ╲  ╱  ╲                 │  │  Gradient fill below line
+│  │    │ ╱    ╲╱    ╲___╱╲            │  │
+│  │    │╱────────────────────╲──       │  │
+│  │    └──────────────────────────     │  │
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌─── Top Expenses ──────────────────┐  │
+│  │  1. 🛒 Amazon              $89.99 │  │  Ranked list
+│  │  2. 🍔 Costco              $77.50 │  │  Index number + category icon
+│  │  3. 💡 Electricity         $120.00│  │  Amount highlighted
+│  └────────────────────────────────────┘  │
+├──────────────────────────────────────────┤
+│  Home │ Trans │ Budget │ Rprts │ Settngs │
+└──────────────────────────────────────────┘</code></pre>
+
+<h4>7. CATEGORIES</h4>
+<pre><code>┌──────────────────────────────────────────┐
+│  ← Categories                       ＋   │  TopAppBar
+├──────────────────────────────────────────┤
+│                                          │
+│  ┌── 🍔 Food ─────────────────────────┐ │
+│  │   ████  (red bar indicator)         │ │  Category card
+│  │   12 transactions · $450 this month │ │  Color indicator on left (4dp stripe)
+│  │                                     │ │  Transaction count + amount
+│  └────────────────────────────────────┘ │
+│                                          │
+│  ┌── 🚌 Transport ───────────────────┐  │
+│  │   ████  (blue bar)                 │  │
+│  │   8 transactions · $80 this month  │  │
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌── 🛒 Shopping ────────────────────┐  │
+│  │   ████  (orange bar)              │  │
+│  │   5 transactions · $200 this month│  │
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌── 💡 Bills ───────────────────────┐  │
+│  │   ████  (purple bar)              │  │
+│  │   3 transactions · $150 this month│  │
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌── 🎮 Entertainment ───────────────┐  │
+│  │   ████  (pink bar)                │  │
+│  │   2 transactions · $100 this month│  │
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌── Other ──────────────────────────┐  │
+│  │   ████  (grey bar)                │  │
+│  │   1 transaction · $15 this month  │  │
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌─── Manage Categories ─────────────┐   │
+│  │  [Food] [Transport] [Shop] [+]   │   │  FlowRow of chips
+│  │  Tap to rename · Long-press drag  │   │  Reorder capability
+│  └────────────────────────────────────┘  │
+├──────────────────────────────────────────┤
+│  Home │ Trans │ Budget │ Rprts │ Settngs │
+└──────────────────────────────────────────┘</code></pre>
+
+<h4>8. SETTINGS</h4>
+<pre><code>┌──────────────────────────────────────────┐
+│  ← Settings                              │  TopAppBar
+├──────────────────────────────────────────┤
+│                                          │
+│  ┌─── Account ───────────────────────┐  │
+│  │  👤  John Doe                      │  │  Profile row (avatar + name)
+│  │     john.doe@email.com             │  │  Subtitle
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌─── Preferences ───────────────────┐  │
+│  │  🌐 Currency          USD ▾       │  │  Dropdown: USD / EUR / GBP / etc. (DataStore)
+│  │  🌙 Theme         System ▾       │  │  Dropdown: Light / Dark / System
+│  │  📅 Budget Period  Monthly ▾     │  │  Dropdown: Weekly / Monthly / Yearly
+│  │  🔢 Default Category   Other ▾   │  │  Dropdown: pick default category
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌─── Notifications ────────────────┐  │
+│  │  🔔 Budget alerts              ON │  │  Switch
+│  │  📊 Weekly report             OFF │  │  Switch
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌─── Data ──────────────────────────┐  │
+│  │  📤 Export as CSV                 │  │  Menu row (opens share sheet)
+│  │  📥 Import from CSV               │  │  Menu row (opens file picker)
+│  │  ☁️ Sync with server          OFF │  │  Switch (backend sync toggle)
+│  │  🗑  Clear all data               │  │  Destructive (red text, confirm dialog)
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌─── About ─────────────────────────┐  │
+│  │  ℹ️  Version                  1.0.0│  │
+│  │  📄 Open source licenses          │  │  → LicensesActivity
+│  │  ⭐ Rate the app                  │  │  → Play Store listing
+│  └────────────────────────────────────┘  │
+├──────────────────────────────────────────┤
+│  Home │ Trans │ Budget │ Rprts │ Settngs │
+└──────────────────────────────────────────┘</code></pre>
+
+<h3>Reusable Component Library</h3>
+<table>
+<thead>
+<tr><th>Component</th><th>Height</th><th>Shape</th><th>Key Props</th><th>States</th></tr>
+</thead>
+<tbody>
+<tr><td><code>AppTopBar</code></td><td>64dp</td><td>—</td><td>title, navIcon, actions</td><td>—</td></tr>
+<tr><td><code>TotalCard</code></td><td>auto</td><td>R=24dp</td><td>amount, percentage, period</td><td>loading (shimmer)</td></tr>
+<tr><td><code>ExpenseListItem</code></td><td>72dp</td><td>R=12dp, elev=2dp</td><td>icon, title, subtitle, amount, swipe</td><td>swipe-delete, shimmer</td></tr>
+<tr><td><code>FilterChipRow</code></td><td>40dp</td><td>R=20dp</td><td>items, selected, onSelect</td><td>—</td></tr>
+<tr><td><code>ProgressBar</code></td><td>8dp</td><td>R=4dp</td><td>progress (0.0–1.0), color</td><td>determinate / indeterminate</td></tr>
+<tr><td><code>CircularProgressIndicator</code></td><td>120dp</td><td>—</td><td>progress, strokeWidth, size</td><td>determinate / indeterminate</td></tr>
+<tr><td><code>BudgetCard</code></td><td>auto</td><td>R=12dp</td><td>category, used, limit, progress, daysLeft</td><td>warning (≥90%), over (100%)</td></tr>
+<tr><td><code>CategoryIcon</code></td><td>40dp</td><td>Circle</td><td>category, size</td><td>color mapped from enum</td></tr>
+<tr><td><code>AddExpenseSheet</code></td><td>~70%</td><td>R=24dp (top)</td><td>—</td><td>validation, saving, success, error, unsaved-dismiss</td></tr>
+<tr><td><code>EmptyState</code></td><td>auto</td><td>—</td><td>illustration, title, subtitle, action</td><td>—</td></tr>
+<tr><td><code>ErrorState</code></td><td>auto</td><td>—</td><td>message, onRetry</td><td>—</td></tr>
+<tr><td><code>ShimmerPlaceholder</code></td><td>auto</td><td>configurable</td><td>width, height, shape</td><td>—</td></tr>
+<tr><td><code>ConfirmDialog</code></td><td>auto</td><td>—</td><td>title, message, confirmLabel, isDestructive</td><td>—</td></tr>
+<tr><td><code>Snackbar</code></td><td>48dp</td><td>R=12dp</td><td>message, action, actionLabel</td><td>undo, dismiss</td></tr>
+<tr><td><code>SectionHeader</code></td><td>32dp</td><td>—</td><td>title, action, actionLabel</td><td>—</td></tr>
+</tbody>
+</table>
+
+<h3>User Flows (Critical Paths)</h3>
+
+<h4>Flow A: Log a new expense (happy path)</h4>
+<pre><code>1. User taps FAB (＋) on Home
+2. → AddExpenseSheet slides up
+3. User fills: Title, Amount, Category, Date (+ optional photo)
+4. User taps "Save Expense"
+5. → Button shows spinner, fields disabled
+6. → Expense saved to Room via ViewModel
+7. → Sheet dismisses automatically
+8. → New item appears at top of Recent Transactions list (with animateItemPlacement)
+9. → Total Spent card updates (animated number count-up)
+10. → Snackbar: "Expense added" (2s, auto-dismiss)</code></pre>
+
+<h4>Flow B: Delete with undo</h4>
+<pre><code>1. User swipes left on an ExpenseListItem
+2. → Red Delete background revealed with trash icon
+3. → On swipe completion:
+      a. Expense removed from list (animateItemRemoval)
+      b. Total Spent updates
+      c. Snackbar appears: "Deleted" [Undo] (5s timeout)
+4. If user taps [Undo] within 5s:
+      → Expense restored to original position in list
+      → Snackbar: "Restored"
+5. If 5s expires:
+      → Expense deleted from Room permanently
+      → No further action</code></pre>
+
+<h4>Flow C: Navigate away with unsaved data</h4>
+<pre><code>1. User fills AddExpenseSheet (or Edit mode on TransactionDetail)
+2. User taps back / swipes down / taps outside
+3. → If any field has been modified:
+      → AlertDialog: "Discard changes?" [Discard] [Keep editing]
+4. [Discard] → dismiss, no save
+5. [Keep editing] → dialog closes, user continues editing</code></pre>
+
+<h4>Flow D: Offline behavior</h4>
+<pre><code>1. Device loses connectivity
+2. → ConnectivityManager callback triggers
+3. → Subtle banner appears below TopAppBar: "You're offline — showing cached data"
+4. → All CRUD operations go only to Room (local-first)
+5. → Pull-to-refresh shows "No connection" in refresh indicator
+6. → Network-dependent features (sync, import/export) disabled with tooltip
+7. When connectivity returns:
+      → Banner dismisses
+      → Silent background sync pushes local changes to backend (if sync enabled)
+      → Snackbar: "Back in sync!"</code></pre>
+
+<hr>
+
+<h2>Build &amp; Run</h2>
+
+<h3>Android Client</h3>
+<pre><code><span class="hljs-comment"># Build debug APK</span>
+./gradlew :android:app:assembleDebug
+
+<span class="hljs-comment"># Run unit tests</span>
+./gradlew :android:app:testDebugUnitTest
+
+<span class="hljs-comment"># Run a single test</span>
+./gradlew :android:app:testDebugUnitTest --tests "dev.oruizp.expensetracker.ExampleUnitTest"
+
+<span class="hljs-comment"># Full Android build (assemble + lint + test)</span>
+./gradlew :android:app:build</code></pre>
+
+<h3>Backend</h3>
+<pre><code><span class="hljs-comment"># Build + test</span>
+./gradlew :backend:build :backend:test
+
+<span class="hljs-comment"># Run Ktor server (port 8080)</span>
+./gradlew :backend:run</code></pre>
+
+<h3>Full Project Build</h3>
+<pre><code>./gradlew build</code></pre>
+
+<hr>
+
+<h2>Testing Strategy</h2>
+<table>
+<thead>
+<tr><th>Layer</th><th>Testing Approach</th><th>Tools</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Presentation (UI)</strong></td><td>Compose UI tests with <code>ComposeTestRule</code>; screenshot tests</td><td><code>androidx.compose.ui.test.junit4</code></td></tr>
+<tr><td><strong>ViewModel</strong></td><td>Unit test with fake repository + <code>kotlinx-coroutines-test</code></td><td>JUnit 4, Turbine (Flow testing)</td></tr>
+<tr><td><strong>Domain</strong></td><td>Pure unit tests for use cases</td><td>JUnit 4</td></tr>
+<tr><td><strong>Data (Local)</strong></td><td>Room in-memory database tests with <code>@RunWith(AndroidJUnit4::class)</code></td><td><code>androidx.test.runner.AndroidJUnit4</code></td></tr>
+<tr><td><strong>Data (Remote)</strong></td><td>MockWebServer for Retrofit API tests</td><td>OkHttp MockWebServer</td></tr>
+<tr><td><strong>Backend</strong></td><td>Ktor <code>testHost</code> for route/controller tests</td><td><code>ktor-server-test-host</code>, JUnit 4</td></tr>
+<tr><td><strong>Integration</strong></td><td>End-to-end: Android test + backend test server</td><td>UI tests + test server</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2>Roadmap</h2>
+
+<h3>Phase 1 — Foundation ✓</h3>
+<ul>
+<li>Room database, DAO, Entity</li>
+<li>Home screen with total card + transaction list</li>
+<li>Add expense bottom sheet</li>
+<li>Material 3 theme (light/dark/dynamic)</li>
+</ul>
+
+<h3>Phase 2 — Navigation &amp; Scaffolding</h3>
+<ul>
+<li>Bottom navigation bar with 5 tabs</li>
+<li>NavHost with route definitions</li>
+<li>Empty placeholder screens for all feature modules</li>
+<li>TopAppBar with back navigation</li>
+</ul>
+
+<h3>Phase 3 — Transactions</h3>
+<ul>
+<li>Full transaction list with filter chips</li>
+<li>Search bar (debounced)</li>
+<li>Transaction detail screen (view / edit / delete)</li>
+<li>Swipe-to-delete with undo snackbar</li>
+<li>Pull-to-refresh</li>
+<li>Pagination (load more)</li>
+</ul>
+
+<h3>Phase 4 — Budgets</h3>
+<ul>
+<li>Monthly budget overview (circular + linear progress)</li>
+<li>Per-category budget cards</li>
+<li>Add/edit budget sheet</li>
+<li>Over-budget warnings (90% → orange, 100% → red)</li>
+</ul>
+
+<h3>Phase 5 — Reports</h3>
+<ul>
+<li>Pie/donut chart for spending breakdown</li>
+<li>Line chart for daily trends</li>
+<li>Period picker (monthly, yearly)</li>
+<li>Top expenses list</li>
+<li>Chart interaction (tap slice, tooltips)</li>
+</ul>
+
+<h3>Phase 6 — Categories</h3>
+<ul>
+<li>Category list with transaction counts</li>
+<li>Add/edit category (name + color)</li>
+<li>Reorder categories</li>
+</ul>
+
+<h3>Phase 7 — Settings</h3>
+<ul>
+<li>Preferences (currency, theme, budget period)</li>
+<li>Data export/import (CSV)</li>
+<li>Clear all data with confirmation</li>
+<li>About section</li>
+</ul>
+
+<h3>Phase 8 — Error Handling &amp; Polish</h3>
+<ul>
+<li>All error/loading/empty states across every screen</li>
+<li>Offline banner + offline-first behavior</li>
+<li>Shimmer loading placeholders</li>
+<li>Animations (item add/remove, card transitions, page transitions)</li>
+<li>Input validation refinement</li>
+<li>Accessibility (contentDescription, touch targets)</li>
+</ul>
+
+<h3>Phase 9 — Backend Sync &amp; Advanced</h3>
+<ul>
+<li>Ktor REST API for expenses CRUD</li>
+<li>Retrofit integration on client</li>
+<li>Sync service (work manager)</li>
+<li>Authentication (optional)</li>
+<li>Push notifications for budget alerts</li>
+<li>Receipt photo capture (CameraX)</li>
+<li>Location tagging for transactions</li>
+</ul>
+
+<hr>
+
+<h2>License</h2>
+<p>MIT</p>
+
+</body>
+</html>
